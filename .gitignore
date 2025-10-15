@@ -1,0 +1,30 @@
+node_modules
+build
+npm-debug.log
+.env
+.env.production
+.env.local
+.env.*.local
+
+# But allow the example file to be committed
+!.env.example
+
+.DS_Store
+TODO.txt
+
+# Docker volumes and data
+**/data
+*_data
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Docker temporary files
+.dockerignore~
+Dockerfile~
+docker-compose.yml~
+/src/generated/prisma

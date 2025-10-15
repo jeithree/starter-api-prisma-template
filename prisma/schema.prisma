@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id                      String        @id @default(cuid())
+    name                    String?
+    username                String        @unique
+    usernameToDisplay       String
+    usernameShorthand       String?
+    email                   String        @unique
+    gender                  String?
+    birthday                DateTime?
+    timezone                String?
+    locale                  String?
+    isEnabled               Boolean
+
+    // Relations
+    auth                    Auth?
+    oAuthAccounts           OAuthAccount[]
+    emailVerification       EmailVerification?
+    recoverPassword         RecoverPassword?
+    role                    Role          @default(USER)
+
+    createdAt               DateTime      @default(now())
+    updatedAt               DateTime      @updatedAt
+}
+
+model Auth {
+    id                      String        @id @default(cuid())
+    userId                  String        @unique
+    user                    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    password                String?
+    hasPassword             Boolean       @default(false)
+    failedLoginAttempts     Int           @default(0)
+    isAccountBlocked        Boolean       @default(false)
+    accountBlockExpiresAt   DateTime?
+    accountBlockTimeNumber  Int           @default(0)
+}
+
+model EmailVerification {
+    id                                      String        @id @default(cuid())
+    userId                                  String        @unique
+    user                                    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    emailVerificationToken                  String?
+    emailVerificationTokenExpiresAt         DateTime?
+    newEmail                                String?
+    newEmailVerificationToken               String?
+    newEmailVerificationTokenExpiresAt      DateTime?
+    isEmailVerified                         Boolean       @default(false)
+}
+
+model RecoverPassword {
+    id                                  String        @id @default(cuid())
+    userId                              String        @unique
+    user                                User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    recoverPasswordToken                String?
+    recoverPasswordTokenExpiresAt       DateTime?
+}
+
+model OAuthAccount {
+    id              String   @id @default(cuid())
+    provider        String
+    providerUserId  String
+    userId          String
+    user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+
+    @@unique([provider, providerUserId])
+}
+
+enum Role {
+    USER
+    ADMIN
+    MANAGER
+}

@@ -1,0 +1,104 @@
+{
+	"units": {
+		"minutes": "minutos",
+		"hours": "horas"
+	},
+	"server": {
+		"errors": {
+			"INTERNAL_SERVER_ERROR": "Error de red, vuelve a intentarlo.",
+			"PAYLOAD_TOO_LARGE": "El tamaño del payload es demasiado grande para ser procesado."
+		}
+	},
+	"validation": {
+		"UNKNOWN_VALIDATION_ERROR": "Error de validación desconocido",
+		"NO_SCRIPT_ALLOWED": "No se permiten scripts",
+		"USERNAME_FIELD_REQUIRED": "El usuario es requerido",
+		"EMAIL_FIELD_REQUIRED": "El email es requerido",
+		"PASSWORD_FIELD_REQUIRED": "La contraseña es requerida",
+		"NEWPASSWORD_FIELD_REQUIRED": "La nueva contraseña es requerida",
+		"CONFIRMPASSWORD_FIELD_REQUIRED": "El campo confirmar contraseña es requerido",
+		"USERNAME_FIELD_EMPTY": "El usuario no puede estar vacío",
+		"EMAIL_FIELD_EMPTY": "El email no puede estar vacío",
+		"PASSWORD_FIELD_EMPTY": "La contraseña no puede estar vacía",
+		"NEWPASSWORD_FIELD_EMPTY": "La nueva contraseña no puede estar vacía",
+		"CONFIRMPASSWORD_FIELD_EMPTY": "El campo confirmar contraseña no puede estar vacío",
+		"USERNAME_CONTAINS_SPACES": "El usuario no puede contener espacios",
+		"INVALID_USERNAME": "El usuario ingresado no es válido (minimo 4 caracteres, no espacios)",
+		"INVALID_EMAIL": "El email ingresado no es válido",
+		"INVALID_EMAIL_LENGTH": "El email no puede tener más de 65 caracteres",
+		"INVALID_PASSWORD": "La contraseña debe contener al menos 1 minúscula, 1 mayúscula, 1 número, 1 símbolo y debe tener al menos 8 caracteres",
+		"INVALID_NEWPASSWORD": "La nueva contraseña debe contener al menos 1 minúscula, 1 mayúscula, 1 número, 1 símbolo y debe tener al menos 8 caracteres",
+		"PASSWORD_MISMATCH": "Ambas nuevas contraseñas deben coincidir",
+		"INVALID_REQUEST": "Solicitud inválida",
+		"TOKEN_REQUIRED": "El token es requerido",
+		"TOKEN_FIELD_EMPTY": "El token no puede estar vacío"
+	},
+	"rateLimit": {
+		"CREATE_ACCOUNT_RATE_LIMIT_EXCEEDED": "Has excedido el límite de creación de cuentas, intentalo mas tarde",
+		"ADMIN_LOGIN_RATE_LIMIT_EXCEEDED": "Has excedido el límite de intentos de inicio de sesión, intentalo mas tarde",
+		"LOGIN_RATE_LIMIT_EXCEEDED": "Has excedido el límite de intentos de inicio de sesión, intentalo mas tarde",
+		"EMAIL_VERIFICATION_TOKEN_RATE_LIMIT_EXCEEDED": "Has excedido el límite de solicitudes de códigos de verificación, intentalo mas tarde",
+		"PASSWORD_RESET_REQUEST_RATE_LIMIT_EXCEEDED": "Has excedido el límite de solicitudes de reseteo de contraseña, intentalo mas tarde",
+		"GENERAL_RATE_LIMIT_EXCEEDED": "Has excedido el límite de solicitudes, intentalo mas tarde"
+	},
+	"auth": {
+		"errors": {
+			"INVALID_CREDENTIALS": "El email o contraseña no coinciden",
+			"EMAIL_NOT_VERIFIED": "Debes verificar tu email para poder iniciar sesión",
+			"OAUTH_LOGIN_FAILED": "No se pudo iniciar sesión con {{provider}}, vuelve a intentarlo",
+			"ALREADY_LOGGED_IN": "Ya tienes una sesión iniciada",
+			"NOT_LOGGED_IN": "Debes iniciar sesión para poder realizar esta acción",
+			"ADMIN_ACCESS_REQUIRED": "Se requiere acceso de administrador para esta acción",
+			"NOT_AUTHENTICATED": "No autenticado, vuelve a iniciar sesión",
+			"OAUTH_ACCOUNT_ALREADY_LINKED": "Esta cuenta de {{provider}} ya está vinculada a otro usuario"
+		},
+		"success": {
+			"LOGIN_SUCCESS": "Inicio de sesión exitoso"
+		}
+	},
+	"user": {
+		"errors": {
+			"ACCOUNT_BLOCKED": "La cuenta esta bloqueada por {{blockTime}} {{blockTimeUnit}}",
+			"NOT_ALLOWED_USERNAME": "El usuario ingresado no es válido",
+			"USERNAME_ALREADY_TAKEN": "El usuario ingresado ya se encuentra registrado",
+			"EMAIL_ALREADY_EXISTS": "El email ingresado ya se encuentra registrado",
+			"EMAIL_NOT_FOUND": "El email no existe",
+			"EMAIL_ALREADY_VERIFIED": "El email ingresado ya se encuentra validado",
+			"INVALID_EMAIL_VERIFICATION_TOKEN": "El código de verificación es incorrecto",
+			"EMAIL_VERIFICATION_TOKEN_EXPIRED": "El código de verificación ya expiró",
+			"EMAIL_VERIFICATION_TOKEN_NOT_EXPIRED": "Solo puedes solicitar un nuevo código de verificación después de {{waitTime}} {{unit}}, intentalo en {{timeLeft}} {{unit}}",
+			"INVALID_PASSWORD_RESET_TOKEN": "El token no es valido",
+			"PASSWORD_RESET_TOKEN_EXPIRED": "El enlace de reseteo de contraseña ha expirado",
+			"PASSWORD_RESET_TOKEN_NOT_EXPIRED": "Solo puedes solicitar un nuevo enlace de reseteo de contraseña después de {{waitTime}} {{unit}}, intentalo en {{timeLeft}} {{unit}}",
+			"USER_NOT_FOUND": "El usuario no existe",
+			"PASSWORD_UPDATE_FAILED": "No se pudo actualizar la contraseña, vuelve a intentarlo",
+			"INVALID_CURRENT_PASSWORD": "La contraseña actual no coincide",
+			"EMAIL_VERIFICATION_FAILED": "No se realizar la verificación del email, vuelve a intentarlo",
+			"MISSING_REQUIRED_FIELDS": "Faltan campos requeridos",
+			"ACCOUNT_NOT_ENABLED": "La cuenta no está habilitada, comunícate con el soporte"
+		},
+		"success": {
+			"USER_CREATED": "Cuenta creada exitosamente, a continuación debes verificar tu email",
+			"USER_UPDATED": "Cuenta actualizada exitosamente",
+			"EMAIL_VERIFIED": "Email verificado exitosamente, ya puedes iniciar sesión"
+		}
+	},
+	"email": {
+		"errors": {
+			"SEND_EMAIL_VERIFICATION_TOKEN_FAILED": "No se pudo enviar el código de verificación, vuelve a intentarlo",
+			"SEND_RECOVER_PASSWORD_EMAIL_FAILED": "No se pudo enviar el enlace para cambiar la contraseña, vuelve a intentarlo"
+		},
+		"success": {
+			"EMAIL_VERIFICATION_TOKEN_SENT": "Código de verificación enviado exitosamente",
+			"PASSWORD_RESET_LINK_SENT": "Enlace para cambiar la contraseña enviado exitosamente"
+		}
+	},
+	"internal": {
+		"queue": {
+			"errors": {
+				"QUEUE_NOT_FOUND": "La queue '{{name}}' no existe"
+			}
+		}
+	},
+	"Invalid input": " expected string, received undefined"
+}
