@@ -16,12 +16,10 @@ import {
 	ForbiddenError,
 	NotFoundError,
 	ServerError,
-	ValidationError,
 } from '../lib/domainError.ts';
 import * as Logger from '../helpers/logger.ts';
 import {
 	SITE_NAME,
-	NOT_ALLOWED_USERNAMES,
 	EMAIL_VERIFICATION_TOKEN_EXPIRATION_MINUTES,
 	PASSWORD_VERIFICATION_TOKEN_EXPIRATION_MINUTES,
 	SITE_URL,
@@ -38,19 +36,6 @@ QueueManager.createQueue('passwordResetEmailQueue', {
 	concurrency: 10,
 });
 
-const assertUsernameIsValid = (username: string) => {
-	const usernameToLowerCase = username.toLowerCase();
-
-	for (const username of NOT_ALLOWED_USERNAMES) {
-		if (usernameToLowerCase.includes(username)) {
-			throw new ValidationError({
-				messageKey: 'user.errors.NOT_ALLOWED_USERNAME',
-				data: {username},
-			});
-		}
-	}
-};
-
 const assertUsernameDoesNotExists = async (username: string) => {
 	const usernameToLowerCase = username.toLowerCase();
 
@@ -63,7 +48,7 @@ const assertUsernameDoesNotExists = async (username: string) => {
 	if (usernameFound) {
 		throw new ConflictError({
 			messageKey: 'user.errors.USERNAME_ALREADY_TAKEN',
-			data: {username},
+			data: [{field: 'username', message: translate('user.errors.USERNAME_ALREADY_TAKEN')}],
 		});
 	}
 };
@@ -78,7 +63,7 @@ const assertEmailDoesNotExists = async (email: string) => {
 	if (user) {
 		throw new ConflictError({
 			messageKey: 'user.errors.EMAIL_ALREADY_EXISTS',
-			data: {email},
+			data: [{field: 'email', message: translate('user.errors.EMAIL_ALREADY_EXISTS')}],
 		});
 	}
 };
@@ -381,7 +366,10 @@ const assertRecoverPasswordTokenIsNotExpired = (
 	}
 };
 
-const getUserForLogin = async (email: string, roleToUse: User['role'] | null | undefined) => {
+const getUserForLogin = async (
+	email: string,
+	roleToUse: User['role'] | null | undefined
+) => {
 	const user = await prisma.user.findFirst({
 		where: {
 			email: email.toLowerCase(),
@@ -547,11 +535,11 @@ const handleEmailIsNotVerified = async (
 };
 
 const assertUserIsEnabled = (isEnabled: boolean) => {
-    if (!isEnabled) {
-        throw new ForbiddenError({
-            messageKey: 'user.errors.ACCOUNT_NOT_ENABLED',
-        });
-    }
+	if (!isEnabled) {
+		throw new ForbiddenError({
+			messageKey: 'user.errors.ACCOUNT_NOT_ENABLED',
+		});
+	}
 };
 
 export const handleUserCreation = async ({
@@ -577,7 +565,6 @@ export const handleUserCreation = async ({
 		);
 	}
 
-	assertUsernameIsValid(data.username);
 	await assertUsernameDoesNotExists(data.username);
 	await assertEmailDoesNotExists(data.email);
 
@@ -713,7 +700,7 @@ export const handleLogin = async (
 	roleToUse?: User['role']
 ) => {
 	const user = await getUserForLogin(data.email, roleToUse);
-    assertUserIsEnabled(user.isEnabled);
+	assertUserIsEnabled(user.isEnabled);
 	assertUserIsNotBlocked(
 		user.auth?.isAccountBlocked,
 		user.auth?.accountBlockExpiresAt,

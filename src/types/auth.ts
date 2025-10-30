@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {NOT_ALLOWED_USERNAMES} from '../configs/basic.ts';
 
 export const userCreateSchema = z.object({
 	username: z
@@ -6,7 +7,16 @@ export const userCreateSchema = z.object({
 		.min(4, 'validation.INVALID_USERNAME')
 		.max(60, 'validation.INVALID_USERNAME')
 		.refine((val) => !val.includes(' '), 'USERNAME_CONTAINS_SPACES')
-		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED'),
+		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED')
+		.refine(
+			(val) => {
+				const lowerCaseUsername = val.toLowerCase();
+				return !NOT_ALLOWED_USERNAMES.some((notAllowed) =>
+					lowerCaseUsername.includes(notAllowed)
+				);
+			},
+			{message: 'user.errors.NOT_ALLOWED_USERNAME'}
+		),
 	email: z
 		.email('validation.INVALID_EMAIL')
 		.max(65, 'validation.INVALID_EMAIL_LENGTH')
@@ -119,5 +129,3 @@ export const userAuthSchema = z.object({
 		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED'),
 });
 export type UserAuthDto = z.infer<typeof userAuthSchema>;
-
-
