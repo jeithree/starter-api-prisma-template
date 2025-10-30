@@ -1,18 +1,5 @@
+import type {ApiResponseDto} from '../types/apiResponse.ts';
 import {translate} from '../helpers/helper.ts';
-
-type ApiResponseSuccess = {
-	success: true;
-	message?: string;
-	data?: any;
-};
-type ApiResponseError = {
-	success: false;
-	error: {
-		message: string;
-		code: string;
-		data?: any;
-	};
-};
 
 class ApiResponse {
 	constructor() {}
@@ -44,7 +31,7 @@ class ApiResponse {
 		replacements?: Record<string, string>;
 		data?: any;
 	}) {
-		const response: ApiResponseSuccess = {
+		const response: ApiResponseDto = {
 			success: true,
 		};
 
@@ -68,7 +55,7 @@ class ApiResponse {
 		replacements?: Record<string, string>;
 		data?: any;
 	}) {
-		const response: ApiResponseError = {
+		const response: ApiResponseDto = {
 			success: false,
 			error: {
 				message: translate(messageKey, replacements),
@@ -76,7 +63,7 @@ class ApiResponse {
 			},
 		};
 
-		if (data) {
+		if (response.error && data) {
 			response.error.data = data;
 		}
 

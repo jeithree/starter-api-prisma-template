@@ -39,7 +39,7 @@ export const errorHandler = (
 
 		if (error.shouldRedirect) {
 			return res.redirect(
-				`${error.redirectUrl}?error_message=${errorRespondObject.error.message}`
+				`${error.redirectUrl}?error_message=${errorRespondObject.error?.message}`
 			);
 		}
 
