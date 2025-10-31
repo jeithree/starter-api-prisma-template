@@ -6,13 +6,13 @@ const router = Router();
 
 router.get(
 	'/oauth/users/:provider/url',
-	authMiddleware.isNotLogged,
+	authMiddleware.isSocialNotLogged,
 	oAuthController.getOAuthProviderUrl
 );
 
 router.get(
 	'/oauth/users/:provider/login',
-	authMiddleware.isNotLogged,
+	authMiddleware.isSocialNotLogged,
 	oAuthController.loginWithOAuthProvider
 );
 
