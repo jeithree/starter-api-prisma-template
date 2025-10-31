@@ -19,25 +19,35 @@ export const SESSION_COOKIE = {
 		sameSite: 'lax' as const,
 		path: '/',
 	},
-    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+	maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
 };
 
 export const STATE_COOKIE_KEY = {
-    name: '_apst.oauth.state',
-    options: {
-        httpOnly: true,
-        secure: DEV_MODE ? false : true,
-        sameSite: 'lax' as const,
-    },
-    maxAge: 1000 * 60 * 10,
-}
+	name: '_apst.oauth.state',
+	options: {
+		httpOnly: true,
+		secure: DEV_MODE ? false : true,
+		sameSite: 'lax' as const,
+	},
+	maxAge: 1000 * 60 * 10,
+};
 
 export const CODE_VERIFIER_COOKIE_KEY = {
-    name: '_apst.oauth.code_verifier',
-    options: {
-        httpOnly: true,
-        secure: DEV_MODE ? false : true,
-        sameSite: 'lax' as const,
-    },
-    maxAge: 1000 * 60 * 10,
-}
+	name: '_apst.oauth.code_verifier',
+	options: {
+		httpOnly: true,
+		secure: DEV_MODE ? false : true,
+		sameSite: 'lax' as const,
+	},
+	maxAge: 1000 * 60 * 10,
+};
+
+export const REDIRECT_ERROR_COOKIE = {
+	name: '_apst.redirect.error',
+	options: {
+		httpOnly: false,
+		secure: DEV_MODE ? false : true,
+		sameSite: 'lax' as const,
+	},
+	maxAge: 1000 * 60 * 2,
+};

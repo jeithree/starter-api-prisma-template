@@ -4,6 +4,7 @@ import * as Logger from '../helpers/logger.ts';
 import {DEV_MODE, MAX_PAYLOAD_SIZE} from '../configs/basic.ts';
 import DomainError, {ServerError} from '../lib/domainError.ts';
 import ApiResponse from '../lib/apiResponse.ts';
+import {REDIRECT_ERROR_COOKIE} from '../configs/cookies.ts';
 
 export const errorHandler = (
 	error: unknown,
@@ -38,9 +39,16 @@ export const errorHandler = (
 		const errorRespondObject = ApiResponse.error(error);
 
 		if (error.shouldRedirect) {
-			return res.redirect(
-				`${error.redirectUrl}?error_message=${errorRespondObject.error?.message}`
+			res.cookie(
+				REDIRECT_ERROR_COOKIE.name,
+				errorRespondObject.error?.message,
+				{
+					...REDIRECT_ERROR_COOKIE.options,
+					maxAge: REDIRECT_ERROR_COOKIE.maxAge,
+				}
 			);
+
+			return res.redirect(error.redirectUrl);
 		}
 
 		return res.status(error.statusCode).json(errorRespondObject);
