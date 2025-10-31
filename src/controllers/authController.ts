@@ -3,7 +3,7 @@ import type {
 	UserCreateDto,
 	UserEmailVerificationDto,
 	UserEmailDto,
-    UserUpdatePasswordFromResetLinkDto,
+	UserUpdatePasswordFromResetLinkDto,
 	UserAuthDto,
 } from '../types/auth.ts';
 import * as AuthService from '../services/authService.ts';
@@ -169,16 +169,18 @@ export const logout = (req: Request, res: Response) => {
 	return res.status(200).json(ApiResponse.success({data: {isLoggedOut: true}}));
 };
 
-export const isLogged = (req: Request, res: Response) => {
+export const getSession = (req: Request, res: Response) => {
+	console.log(req.session);
+
 	return res.status(200).json(
 		ApiResponse.success({
-			data: {isLogged: req.session.isLogged == true},
+			data: {
+				isLogged: !!req.session.isLogged,
+				role: req.session.role,
+				usernameToDisplay: req.session.usernameToDisplay,
+				email: req.session.email,
+				picture: req.session.picture,
+			},
 		})
 	);
-};
-
-export const getRole = (req: Request, res: Response) => {
-	return res
-		.status(200)
-		.json(ApiResponse.success({data: {role: req.session.role}}));
 };

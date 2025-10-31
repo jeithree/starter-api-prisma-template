@@ -13,14 +13,7 @@ import * as authController from '../../controllers/authController.ts';
 import * as rateLimitMiddleware from '../../middlewares/rateLimitMiddleware.ts';
 const router = Router();
 
-router.get('/auth/users/is-logged-in', authController.isLogged);
-
-router.get(
-	'/auth/users/role',
-	authMiddleware.isLogged,
-	fingerprintMiddleware.validateFingerprint,
-	authController.getRole
-);
+router.get('/auth/users/session', authController.getSession);
 
 router.post(
 	'/auth/users',
