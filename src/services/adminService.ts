@@ -10,6 +10,7 @@ import {
 	ADMIN_EMAIL,
 	ADMIN_PASSWORD,
 	TIME_ZONE,
+    LOCALE,
 } from '../configs/basic.ts';
 import {createUsernameShorthand} from './authService.ts';
 import {hashPassword} from '../helpers/password.ts';
@@ -35,6 +36,7 @@ export const createInitialAdminAccount = async () => {
 				email: ADMIN_EMAIL.toLowerCase(),
 				role: 'ADMIN',
 				timezone: TIME_ZONE,
+                locale: LOCALE,
 				isEnabled: true,
 				auth: {
 					create: {

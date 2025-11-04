@@ -7,6 +7,7 @@ export const sessionSchema = z.object({
     usernameToDisplay: z.string().optional(),
     email: z.string().optional(),
     avatar: z.string().nullable().optional(),
+    timezone: z.string().nullable().optional(),
     locale: z.string().nullable().optional(),
 	isLogged: z.boolean(),
     lastTouched: z.number().optional(),

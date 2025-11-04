@@ -3,6 +3,7 @@ export const PORT = parseInt(process.env.PORT as string) || 3000;
 export const MAX_PAYLOAD_SIZE = process.env.MAX_PAYLOAD_SIZE || '25kb';
 export const MAX_IMAGE_UPLOAD_SIZE = '2mb';
 export const TIME_ZONE = process.env.TIME_ZONE || 'America/Lima';
+export const LOCALE = process.env.LOCALE || 'en-US';
 
 if (DEV_MODE) {
 	// to avoid problems with selfsigned certificates during development

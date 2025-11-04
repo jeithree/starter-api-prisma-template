@@ -31,6 +31,7 @@ export const userCreateSchema = z.object({
 		.refine((val) => /[^a-zA-Z0-9]/.test(val), 'validation.INVALID_PASSWORD')
 		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED'),
 	timezone: z.string(),
+    locale: z.string(),
 });
 export type UserCreateDto = z.infer<typeof userCreateSchema>;
 

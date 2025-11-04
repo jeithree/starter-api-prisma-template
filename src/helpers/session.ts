@@ -16,6 +16,7 @@ export const initializeAuthSession = (
     session.email = user.email;
     session.avatar = user.avatar;
     session.locale = user.locale;
+    session.timezone = user.timezone;
     session.isLogged = true;
 	session.cookie.maxAge = SESSION_COOKIE.maxAge;
 

@@ -130,6 +130,7 @@ const createUser = async ({
 			email: data.email,
 			role: role,
 			timezone: data.timezone,
+            locale: data.locale,
 			isEnabled: isEnabled,
 			auth: {
 				create: {
