@@ -69,7 +69,7 @@ router.post(
 	authController.login
 );
 
-router.get(
+router.post(
 	'/auth/users/logout',
 	authMiddleware.isLogged,
 	fingerprintMiddleware.validateFingerprint,
