@@ -3,9 +3,11 @@ import {z} from 'zod';
 export const sessionSchema = z.object({
     userId: z.string(),
 	role: z.enum(['USER', 'ADMIN', 'MANAGER']),
+    usernameShorthand: z.string().optional(),
     usernameToDisplay: z.string().optional(),
     email: z.string().optional(),
     picture: z.string().nullable().optional(),
+    locale: z.string().nullable().optional(),
 	isLogged: z.boolean(),
     lastTouched: z.number().optional(),
 	fingerprint: z.object({

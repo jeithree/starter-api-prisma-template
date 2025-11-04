@@ -11,9 +11,11 @@ export const initializeAuthSession = (
 	const session = req.session;
 	session.userId = user.id;
 	session.role = user.role;
+    session.usernameShorthand = user.usernameShorthand;
     session.usernameToDisplay = user.usernameToDisplay;
     session.email = user.email;
     session.picture = user.picture;
+    session.locale = user.locale;
     session.isLogged = true;
 	session.cookie.maxAge = SESSION_COOKIE.maxAge;
 
