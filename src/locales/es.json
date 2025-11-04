@@ -1,7 +1,8 @@
 {
 	"units": {
 		"minutes": "minutos",
-		"hours": "horas"
+		"hours": "horas",
+        "hour": "hora"
 	},
 	"server": {
 		"errors": {
@@ -37,7 +38,7 @@
 		"CREATE_ACCOUNT_RATE_LIMIT_EXCEEDED": "Has excedido el límite de creación de cuentas, intentalo mas tarde",
 		"ADMIN_LOGIN_RATE_LIMIT_EXCEEDED": "Has excedido el límite de intentos de inicio de sesión, intentalo mas tarde",
 		"LOGIN_RATE_LIMIT_EXCEEDED": "Has excedido el límite de intentos de inicio de sesión, intentalo mas tarde",
-		"EMAIL_VERIFICATION_TOKEN_RATE_LIMIT_EXCEEDED": "Has excedido el límite de solicitudes de códigos de verificación, intentalo mas tarde",
+		"EMAIL_VERIFICATION_TOKEN_RATE_LIMIT_EXCEEDED": "Has excedido el límite de solicitudes de códigos de verificación de {{maxAllowedAttempts}} en {{timeWindowNumber}} {{timeWindowUnit}}, intentalo mas tarde",
 		"PASSWORD_RESET_REQUEST_RATE_LIMIT_EXCEEDED": "Has excedido el límite de solicitudes de reseteo de contraseña, intentalo mas tarde",
 		"GENERAL_RATE_LIMIT_EXCEEDED": "Has excedido el límite de solicitudes, intentalo mas tarde"
 	},
@@ -80,6 +81,7 @@
 		"success": {
 			"USER_CREATED": "Cuenta creada exitosamente, a continuación debes verificar tu email",
 			"USER_UPDATED": "Cuenta actualizada exitosamente",
+            "PASSWORD_UPDATED_FROM_LINK": "Contraseña actualizada exitosamente, ya puedes iniciar sesión con tu nueva contraseña",
 			"EMAIL_VERIFIED": "Email verificado exitosamente, ya puedes iniciar sesión"
 		}
 	},

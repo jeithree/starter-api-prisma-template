@@ -48,7 +48,12 @@ const assertUsernameDoesNotExists = async (username: string) => {
 	if (usernameFound) {
 		throw new ConflictError({
 			messageKey: 'user.errors.USERNAME_ALREADY_TAKEN',
-			data: [{field: 'username', message: translate('user.errors.USERNAME_ALREADY_TAKEN')}],
+			data: [
+				{
+					field: 'username',
+					message: translate('user.errors.USERNAME_ALREADY_TAKEN'),
+				},
+			],
 		});
 	}
 };
@@ -63,19 +68,28 @@ const assertEmailDoesNotExists = async (email: string) => {
 	if (user) {
 		throw new ConflictError({
 			messageKey: 'user.errors.EMAIL_ALREADY_EXISTS',
-			data: [{field: 'email', message: translate('user.errors.EMAIL_ALREADY_EXISTS')}],
+			data: [
+				{
+					field: 'email',
+					message: translate('user.errors.EMAIL_ALREADY_EXISTS'),
+				},
+			],
 		});
 	}
 };
 
 const assertEmailIsNotVerified = (
-	isEmailVerified: boolean | undefined | null,
-	email: string
+	isEmailVerified: boolean | undefined | null
 ) => {
 	if (isEmailVerified) {
 		throw new ConflictError({
 			messageKey: 'user.errors.EMAIL_ALREADY_VERIFIED',
-			data: {email},
+			data: [
+				{
+					field: 'email',
+					message: translate('user.errors.EMAIL_ALREADY_VERIFIED'),
+				},
+			],
 		});
 	}
 };
@@ -181,7 +195,12 @@ const getUserByEmail = async (email: string) => {
 	if (!user) {
 		throw new NotFoundError({
 			messageKey: 'user.errors.EMAIL_NOT_FOUND',
-			data: {email},
+			data: [
+				{
+					field: 'email',
+					message: translate('user.errors.EMAIL_NOT_FOUND'),
+				},
+			],
 		});
 	}
 	return user;
@@ -194,6 +213,12 @@ const assertEmailVerificationTokenIsValid = (
 	if (DBEmailVerificationToken !== emailVerificationToken) {
 		throw new AuthenticationError({
 			messageKey: 'user.errors.INVALID_EMAIL_VERIFICATION_TOKEN',
+			data: [
+				{
+					field: 'emailVerificationToken',
+					message: translate('user.errors.INVALID_EMAIL_VERIFICATION_TOKEN'),
+				},
+			],
 		});
 	}
 };
@@ -215,6 +240,12 @@ const assertEmailVerificationTokenIsNotExpired = (
 	if (now.toMillis() > expires.toMillis()) {
 		throw new AuthenticationError({
 			messageKey: 'user.errors.EMAIL_VERIFICATION_TOKEN_EXPIRED',
+			data: [
+				{
+					field: 'emailVerificationToken',
+					message: translate('user.errors.EMAIL_VERIFICATION_TOKEN_EXPIRED'),
+				},
+			],
 		});
 	}
 };
@@ -269,10 +300,11 @@ const setUserEmailAsVerified = async (userId: string) => {
 const assertRecoverPasswordTokenIsExpired = (
 	recoverPasswordTokenExpirationDate: Date | null | undefined
 ) => {
-	if (!recoverPasswordTokenExpirationDate) {
-		throw new AuthenticationError({
-			messageKey: 'user.errors.INVALID_PASSWORD_RESET_TOKEN',
-		});
+	if (
+		recoverPasswordTokenExpirationDate === null ||
+		recoverPasswordTokenExpirationDate === undefined
+	) {
+		return; // No token exists, so it is considered expired
 	}
 
 	const now = DateTime.utc();
@@ -597,7 +629,7 @@ export const handleEmailVerification = async (
 	emailVerificationToken: string
 ): Promise<void> => {
 	const user = await getUserByEmail(email);
-	assertEmailIsNotVerified(user.emailVerification?.isEmailVerified, email);
+	assertEmailIsNotVerified(user.emailVerification?.isEmailVerified);
 	assertEmailVerificationTokenIsValid(
 		user.emailVerification?.emailVerificationToken,
 		emailVerificationToken
@@ -610,7 +642,7 @@ export const handleEmailVerification = async (
 
 export const handleSendEmailVerificationToken = async (email: string) => {
 	const user = await getUserByEmail(email);
-	assertEmailIsNotVerified(user.emailVerification?.isEmailVerified, email);
+	assertEmailIsNotVerified(user.emailVerification?.isEmailVerified);
 	assertEmailVerificationTokenIsExpired(
 		user.emailVerification?.emailVerificationTokenExpiresAt
 	);

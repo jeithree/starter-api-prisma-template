@@ -110,7 +110,7 @@ export const updatePasswordFromResetLink = async (
 
 		return res.status(200).json(
 			ApiResponse.success({
-				messageKey: 'user.success.USER_UPDATED',
+				messageKey: 'user.success.PASSWORD_UPDATED_FROM_LINK',
 			})
 		);
 	} catch (error) {
@@ -175,8 +175,9 @@ export const getSession = (req: Request, res: Response) => {
 	return res.status(200).json(
 		ApiResponse.success({
 			data: {
-				isLogged: !!req.session.isLogged,
+				isLogged: req.session.isLogged,
 				role: req.session.role,
+                usernameShorthand: req.session.usernameShorthand,
 				usernameToDisplay: req.session.usernameToDisplay,
 				email: req.session.email,
 				picture: req.session.picture,

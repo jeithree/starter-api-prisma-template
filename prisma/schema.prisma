@@ -15,9 +15,9 @@ model User {
     name                    String?
     username                String        @unique
     usernameToDisplay       String
-    usernameShorthand       String?
+    usernameShorthand       String
     email                   String        @unique
-    gender                  String?
+    gender                  Gender?
     birthday                DateTime?
     picture                 String?
     timezone                String?
@@ -87,3 +87,8 @@ enum Role {
     ADMIN
     MANAGER
 }
+
+enum Gender {
+    MALE
+    FEMALE
+}   
