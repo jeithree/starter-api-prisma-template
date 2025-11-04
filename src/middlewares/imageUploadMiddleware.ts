@@ -6,7 +6,7 @@ const __dirname = import.meta.dirname;
 const upload = multer({
 	storage: multer.diskStorage({
 		destination: (_req, _file, cb) => {
-			cb(null, path.join(__dirname, '../public/uploads/avatars'));
+			cb(null, path.join(__dirname, '../../public/uploads/avatars'));
 		},
 		filename: (req, file, cb) => {
 			const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);

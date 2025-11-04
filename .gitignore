@@ -28,3 +28,5 @@ TODO.txt
 Dockerfile~
 docker-compose.yml~
 /src/generated/prisma
+
+/public/uploads/avatars/*

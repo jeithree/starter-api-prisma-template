@@ -5,6 +5,7 @@ import type {
 import prisma from '../prisma.ts';
 import {AuthenticationError, NotFoundError} from '../lib/domainError.ts';
 import {hashPassword, isPasswordValid} from '../helpers/password.ts';
+import {translate} from '../helpers/helper.ts';
 
 const getUserById = async (userId: string) => {
 	const user = await prisma.user.findUnique({
@@ -26,6 +27,12 @@ const assertCurrentPasswordIsValid = async (
 	if (!hashedPassword) {
 		throw new AuthenticationError({
 			messageKey: 'user.errors.INVALID_CURRENT_PASSWORD',
+			data: [
+				{
+					field: 'password',
+					message: translate('user.errors.INVALID_CURRENT_PASSWORD'),
+				},
+			],
 		});
 	}
 
@@ -34,6 +41,12 @@ const assertCurrentPasswordIsValid = async (
 	if (!isValid) {
 		throw new AuthenticationError({
 			messageKey: 'user.errors.INVALID_CURRENT_PASSWORD',
+			data: [
+				{
+					field: 'password',
+					message: translate('user.errors.INVALID_CURRENT_PASSWORD'),
+				},
+			],
 		});
 	}
 };
@@ -43,7 +56,7 @@ const deleteOldAvatarFile = async (oldAvatar: string) => {
 		const fs = await import('node:fs/promises');
 		const path = await import('node:path');
 		const __dirname = import.meta.dirname;
-		const oldAvatarPath = path.join(__dirname, '../public', oldAvatar);
+		const oldAvatarPath = path.join(__dirname, '../../public', oldAvatar);
 		try {
 			await fs.access(oldAvatarPath);
 			await fs.unlink(oldAvatarPath);
@@ -106,9 +119,14 @@ export const handlePasswordUpdateAfterValidatingOldOne = async (
 				accountBlockTimeNumber: 0,
 			},
 		}),
-		prisma.recoverPassword.update({
+		prisma.recoverPassword.upsert({
 			where: {userId: user.id},
-			data: {
+			update: {
+				recoverPasswordToken: null,
+				recoverPasswordTokenExpiresAt: null,
+			},
+			create: {
+				userId: user.id,
 				recoverPasswordToken: null,
 				recoverPasswordTokenExpiresAt: null,
 			},
@@ -130,10 +148,10 @@ export const handleUserProfileUpdate = async (
 		updateData.birthday = new Date(data.birthday);
 	}
 	if (data.avatar !== undefined) {
-		updateData.avatar = data.avatar;
+		updateData.avatar = `/uploads/avatars/${data.avatar}`;
 	}
 
-	await prisma.user.update({
+	const updatedUser = await prisma.user.update({
 		where: {id: userId},
 		data: updateData,
 	});
@@ -141,4 +159,8 @@ export const handleUserProfileUpdate = async (
 	if (data.avatar && oldAvatar) {
 		await deleteOldAvatarFile(oldAvatar);
 	}
+
+	return {
+		avatar: updatedUser.avatar, // to updatea the session
+	};
 };

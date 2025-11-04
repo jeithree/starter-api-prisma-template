@@ -69,7 +69,6 @@ export const errorHandler = (
 
 	const serverError = new ServerError({
 		messageKey: 'server.errors.INTERNAL_SERVER_ERROR',
-		data: DEV_MODE ? error : null,
 	});
 
 	return res

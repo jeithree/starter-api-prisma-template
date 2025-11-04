@@ -1,5 +1,8 @@
 import type {Request, Response, NextFunction} from 'express';
-import type {UserUpdatePasswordDto, UserUpdateProfileDto} from '../types/user.ts';
+import type {
+	UserUpdatePasswordDto,
+	UserUpdateProfileDto,
+} from '../types/user.ts';
 import * as UserService from '../services/userService.ts';
 import ApiResponse from '../lib/apiResponse.ts';
 
@@ -46,9 +49,17 @@ export const updateUserProfile = async (
 	try {
 		const userId = req.session.userId as string;
 		const data = req.body as UserUpdateProfileDto;
-        const oldAvatar = req.session.avatar;
+		const oldAvatar = req.session.avatar;
 
-		await UserService.handleUserProfileUpdate(userId, data, oldAvatar);
+		const user = await UserService.handleUserProfileUpdate(
+			userId,
+			data,
+			oldAvatar
+		);
+
+		if (data.avatar) {
+			req.session.avatar = user.avatar;
+		}
 
 		return res.status(200).json(
 			ApiResponse.success({
