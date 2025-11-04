@@ -1,9 +1,9 @@
 import {Router} from 'express';
-import {paginationQuerySchema} from '../../types/pagination.ts';
-import {userUpdatePasswordSchema} from '../../types/user.ts';
+// import {paginationQuerySchema} from '../../types/pagination.ts';
+import {userUpdatePasswordSchema, userUpdateProfileSchema} from '../../types/user.ts';
 import {
 	validateBody,
-	validateQuery,
+	// validateQuery,
 } from '../../middlewares/validationMiddleware.ts';
 import * as authMiddleware from '../../middlewares/authMiddleware.ts';
 import * as fingerprintMiddleware from '../../middlewares/fingerprintMiddleware.ts';
@@ -12,11 +12,10 @@ import * as userController from '../../controllers/userController.ts';
 const router = Router();
 
 router.get(
-	'/users',
+	'/users/me',
     authMiddleware.isLogged,
 	fingerprintMiddleware.validateFingerprint,
-	validateQuery(paginationQuerySchema),
-	userController.getUser
+	userController.getUserProfile
 );
 
 router.put(
@@ -25,6 +24,14 @@ router.put(
 	fingerprintMiddleware.validateFingerprint,
 	validateBody(userUpdatePasswordSchema),
 	userController.updatePasswordAfterValidatingOldOne
+);
+
+// maybe add rate limiter middleware here
+router.put('/users/profile',
+    authMiddleware.isLogged,
+    fingerprintMiddleware.validateFingerprint,
+    validateBody(userUpdateProfileSchema),
+    userController.updateUserProfile
 );
 
 export default router;

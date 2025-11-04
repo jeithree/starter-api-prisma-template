@@ -2,7 +2,7 @@
 	"units": {
 		"minutes": "minutos",
 		"hours": "horas",
-        "hour": "hora"
+		"hour": "hora"
 	},
 	"server": {
 		"errors": {
@@ -13,6 +13,12 @@
 	"validation": {
 		"UNKNOWN_VALIDATION_ERROR": "Error de validación desconocido",
 		"NO_SCRIPT_ALLOWED": "No se permiten scripts",
+		"INVALID_AVATAR_URL": "La URL del avatar no es válida",
+		"NAME_FIELD_REQUIRED": "El nombre es requerido",
+		"NAME_FIELD_EMPTY": "El nombre no puede estar vacío",
+		"NAME_FIELD_TOO_LONG": "El nombre no puede tener más de 100 caracteres",
+		"BIRTHDAY_FIELD_REQUIRED": "La fecha de nacimiento es requerida",
+		"INVALID_BIRTHDAY": "La fecha de nacimiento no es válida",
 		"USERNAME_FIELD_REQUIRED": "El usuario es requerido",
 		"EMAIL_FIELD_REQUIRED": "El email es requerido",
 		"PASSWORD_FIELD_REQUIRED": "La contraseña es requerida",
@@ -81,8 +87,9 @@
 		"success": {
 			"USER_CREATED": "Cuenta creada exitosamente, a continuación debes verificar tu email",
 			"USER_UPDATED": "Cuenta actualizada exitosamente",
-            "PASSWORD_UPDATED_FROM_LINK": "Contraseña actualizada exitosamente, ya puedes iniciar sesión con tu nueva contraseña",
-			"EMAIL_VERIFIED": "Email verificado exitosamente, ya puedes iniciar sesión"
+			"PASSWORD_UPDATED_FROM_LINK": "Contraseña actualizada exitosamente, ya puedes iniciar sesión con tu nueva contraseña",
+			"EMAIL_VERIFIED": "Email verificado exitosamente, ya puedes iniciar sesión",
+			"USER_PROFILE_UPDATED": "Perfil de usuario actualizado exitosamente"
 		}
 	},
 	"email": {
@@ -101,6 +108,5 @@
 				"QUEUE_NOT_FOUND": "La queue '{{name}}' no existe"
 			}
 		}
-	},
-	"Invalid input": " expected string, received undefined"
+	}
 }

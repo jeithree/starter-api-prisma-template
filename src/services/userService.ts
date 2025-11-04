@@ -1,4 +1,7 @@
-import type {UserUpdatePasswordDto} from '../types/user.ts';
+import type {
+	UserUpdatePasswordDto,
+	UserUpdateProfileDto,
+} from '../types/user.ts';
 import prisma from '../prisma.ts';
 import {AuthenticationError, NotFoundError} from '../lib/domainError.ts';
 import {hashPassword, isPasswordValid} from '../helpers/password.ts';
@@ -48,7 +51,24 @@ export const handleGetUserProfile = async (userId: string) => {
 		});
 	}
 
-	return user;
+	return {
+		id: user.id,
+		username: user.username,
+		email: user.email,
+		name: user.name,
+		usernameToDisplay: user.usernameToDisplay,
+		usernameShorthand: user.usernameShorthand,
+		gender: user.gender,
+		birthday: user.birthday,
+		avatar: user.avatar,
+		timezone: user.timezone,
+		locale: user.locale,
+		isEnabled: user.isEnabled,
+		role: user.role,
+		isEmailVerified: user.emailVerification?.isEmailVerified ?? false,
+		createdAt: user.createdAt,
+		updatedAt: user.updatedAt,
+	};
 };
 
 export const handlePasswordUpdateAfterValidatingOldOne = async (
@@ -79,4 +99,26 @@ export const handlePasswordUpdateAfterValidatingOldOne = async (
 			},
 		}),
 	]);
+};
+
+export const handleUserProfileUpdate = async (
+	userId: string,
+	data: UserUpdateProfileDto
+) => {
+	const updateData: any = {};
+
+	if (data.name !== undefined) {
+		updateData.name = data.name;
+	}
+	if (data.birthday !== undefined) {
+		updateData.birthday = new Date(data.birthday);
+	}
+	if (data.avatar !== undefined) {
+		updateData.avatar = data.avatar;
+	}
+
+	await prisma.user.update({
+		where: {id: userId},
+		data: updateData,
+	});
 };
