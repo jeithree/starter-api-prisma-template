@@ -1,3 +1,4 @@
+import path from 'node:path';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import {init} from './init.ts';
@@ -17,6 +18,7 @@ import {v1routeDefinitions} from './routes/index.ts';
 
 // Initializations
 const app = express();
+const __dirname = import.meta.dirname;
 const helmet = helmetMiddleware.startHelmet();
 const cors = corsMiddleware.startCors();
 const session = sessionMiddleware.createSession();
@@ -37,6 +39,8 @@ app.use(cookieParser(SESSION_SECRET));
 app.use(session);
 app.use(sessionTouch);
 app.use(rateLimitMiddleware.generalLimiter);
+
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // Routes middlewares
 for (const {prefix, router} of v1routeDefinitions) {

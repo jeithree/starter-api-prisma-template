@@ -13,7 +13,7 @@
 	"validation": {
 		"UNKNOWN_VALIDATION_ERROR": "Error de validación desconocido",
 		"NO_SCRIPT_ALLOWED": "No se permiten scripts",
-		"INVALID_AVATAR_URL": "La URL del avatar no es válida",
+		"INVALID_AVATAR": "El avatar no es válido",
 		"NAME_FIELD_REQUIRED": "El nombre es requerido",
 		"NAME_FIELD_EMPTY": "El nombre no puede estar vacío",
 		"NAME_FIELD_TOO_LONG": "El nombre no puede tener más de 100 caracteres",
@@ -38,7 +38,9 @@
 		"PASSWORD_MISMATCH": "Ambas nuevas contraseñas deben coincidir",
 		"INVALID_REQUEST": "Solicitud inválida",
 		"TOKEN_REQUIRED": "El token es requerido",
-		"TOKEN_FIELD_EMPTY": "El token no puede estar vacío"
+		"TOKEN_FIELD_EMPTY": "El token no puede estar vacío",
+        "INVALID_FILE_IMAGE_TYPE": "El tipo de archivo de imagen no es válido, solo se permiten PNG, JPG, JPEG y GIF",
+        "FILE_IMAGE_TOO_LARGE": "El tamaño del archivo de imagen es demasiado grande, el máximo permitido es {{maxFileSize}} MB"
 	},
 	"rateLimit": {
 		"CREATE_ACCOUNT_RATE_LIMIT_EXCEEDED": "Has excedido el límite de creación de cuentas, intentalo mas tarde",

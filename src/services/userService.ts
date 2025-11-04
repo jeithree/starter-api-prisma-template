@@ -38,6 +38,21 @@ const assertCurrentPasswordIsValid = async (
 	}
 };
 
+const deleteOldAvatarFile = async (oldAvatar: string) => {
+	if (oldAvatar) {
+		const fs = await import('node:fs/promises');
+		const path = await import('node:path');
+		const __dirname = import.meta.dirname;
+		const oldAvatarPath = path.join(__dirname, '../public', oldAvatar);
+		try {
+			await fs.access(oldAvatarPath);
+			await fs.unlink(oldAvatarPath);
+		} catch (error) {
+			// File does not exist or cannot be accessed, ignore the error
+		}
+	}
+};
+
 export const handleGetUserProfile = async (userId: string) => {
 	const user = await prisma.user.findUnique({
 		where: {id: userId},
@@ -103,7 +118,8 @@ export const handlePasswordUpdateAfterValidatingOldOne = async (
 
 export const handleUserProfileUpdate = async (
 	userId: string,
-	data: UserUpdateProfileDto
+	data: UserUpdateProfileDto,
+	oldAvatar: string | undefined | null
 ) => {
 	const updateData: any = {};
 
@@ -121,4 +137,8 @@ export const handleUserProfileUpdate = async (
 		where: {id: userId},
 		data: updateData,
 	});
+
+	if (data.avatar && oldAvatar) {
+		await deleteOldAvatarFile(oldAvatar);
+	}
 };

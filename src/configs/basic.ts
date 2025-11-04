@@ -1,6 +1,7 @@
 export const DEV_MODE = process.env.NODE_ENV === 'development';
 export const PORT = parseInt(process.env.PORT as string) || 3000;
 export const MAX_PAYLOAD_SIZE = process.env.MAX_PAYLOAD_SIZE || '25kb';
+export const MAX_IMAGE_UPLOAD_SIZE = '2mb';
 export const TIME_ZONE = process.env.TIME_ZONE || 'America/Lima';
 
 if (DEV_MODE) {

@@ -9,6 +9,7 @@ import * as authMiddleware from '../../middlewares/authMiddleware.ts';
 import * as fingerprintMiddleware from '../../middlewares/fingerprintMiddleware.ts';
 import * as userController from '../../controllers/userController.ts';
 // import * as rateLimitMiddleware from '../../middlewares/rateLimitMiddleware.ts';
+import imageUploadMiddleware from '../../middlewares/imageUploadMiddleware.ts';
 const router = Router();
 
 router.get(
@@ -30,6 +31,7 @@ router.put(
 router.put('/users/profile',
     authMiddleware.isLogged,
     fingerprintMiddleware.validateFingerprint,
+    imageUploadMiddleware.single('avatar'),
     validateBody(userUpdateProfileSchema),
     userController.updateUserProfile
 );

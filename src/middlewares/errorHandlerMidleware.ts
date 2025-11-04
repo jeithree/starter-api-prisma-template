@@ -1,7 +1,11 @@
 import type {Request, Response, NextFunction} from 'express';
 import {ZodError} from 'zod';
 import * as Logger from '../helpers/logger.ts';
-import {DEV_MODE, MAX_PAYLOAD_SIZE} from '../configs/basic.ts';
+import {
+	DEV_MODE,
+	MAX_IMAGE_UPLOAD_SIZE,
+	MAX_PAYLOAD_SIZE,
+} from '../configs/basic.ts';
 import DomainError, {ServerError} from '../lib/domainError.ts';
 import ApiResponse from '../lib/apiResponse.ts';
 import {REDIRECT_ERROR_COOKIE} from '../configs/cookies.ts';
@@ -19,6 +23,15 @@ export const errorHandler = (
 			ApiResponse.error({
 				messageKey: 'server.errors.PAYLOAD_TOO_LARGE',
 				data: {maxAllowedSize: MAX_PAYLOAD_SIZE},
+			})
+		);
+	}
+
+	if ((error as any)?.code === 'FILE_IMAGE_TOO_LARGE') {
+		return res.status(413).json(
+			ApiResponse.error({
+				messageKey: 'validation.FILE_IMAGE_TOO_LARGE',
+				replacements: {maxFileSize: MAX_IMAGE_UPLOAD_SIZE},
 			})
 		);
 	}

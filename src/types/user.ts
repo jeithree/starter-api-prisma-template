@@ -54,14 +54,20 @@ export const userUpdateProfileSchema = z.object({
 		.min(1, 'validation.NAME_FIELD_REQUIRED')
 		.refine((val) => val.trim() !== '', 'validation.NAME_FIELD_EMPTY')
 		.max(100, 'validation.NAME_FIELD_TOO_LONG')
-		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED'),
-	birthday: z.string('validation.BIRTHDAY_FIELD_REQUIRED').refine((val) => {
-		const date = new Date(val);
-		return !isNaN(date.getTime());
-	}, 'validation.INVALID_BIRTHDAY'),
+		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED')
+		.optional(),
+
+	birthday: z
+		.string('validation.BIRTHDAY_FIELD_REQUIRED')
+		.refine((val) => {
+			const date = new Date(val);
+			return !isNaN(date.getTime());
+		}, 'validation.INVALID_BIRTHDAY')
+		.optional(),
 	avatar: z
-		.url('validation.INVALID_AVATAR_URL')
-		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED'),
+		.string('validation.INVALID_AVATAR')
+		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED')
+		.optional(),
 });
 
 export type UserUpdateProfileDto = z.infer<typeof userUpdateProfileSchema>;
