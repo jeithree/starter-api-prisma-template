@@ -180,7 +180,7 @@ export const getSession = (req: Request, res: Response) => {
                 usernameShorthand: req.session.usernameShorthand,
 				usernameToDisplay: req.session.usernameToDisplay,
 				email: req.session.email,
-				picture: req.session.picture,
+				avatar: req.session.avatar,
 			},
 		})
 	);

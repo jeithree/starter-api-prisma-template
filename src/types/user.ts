@@ -16,7 +16,10 @@ export const userUpdatePasswordSchema = z
 			.refine((val) => /[a-z]/.test(val), 'validation.INVALID_NEWPASSWORD')
 			.refine((val) => /[A-Z]/.test(val), 'validation.INVALID_NEWPASSWORD')
 			.refine((val) => /[0-9]/.test(val), 'validation.INVALID_NEWPASSWORD')
-			.refine((val) => /[^a-zA-Z0-9]/.test(val), 'validation.INVALID_NEWPASSWORD')
+			.refine(
+				(val) => /[^a-zA-Z0-9]/.test(val),
+				'validation.INVALID_NEWPASSWORD'
+			)
 			.refine(
 				(val) => !val.includes('<script>'),
 				'validation.NO_SCRIPT_ALLOWED'
@@ -45,31 +48,20 @@ export const userUpdatePasswordSchema = z
 
 export type UserUpdatePasswordDto = z.infer<typeof userUpdatePasswordSchema>;
 
-export const userForAdminResponseSchema = z
-	.object({
-		_id: z.string(),
-		name: z.string(),
-		username: z.string(),
-		usernameShorthand: z.string(),
-		email: z.email(),
-		gender: z.string().optional(),
-		birthday: z.date().optional(),
-		isEmailVerified: z.boolean(),
-		hasPassword: z.boolean(),
-		failedLoginAttempts: z.number(),
-		isAccountBlocked: z.boolean(),
-		accountBlockEndsTime: z.date(),
-		accountBlockTimeNumber: z.union([
-			z.literal(0),
-			z.literal(10),
-			z.literal(24),
-		]),
-		role: z.enum(['user', 'admin', 'moderator']),
-		createdAt: z.date(),
-		updatedAt: z.date(),
-	})
-	.partial();
+export const userUpdateProfileSchema = z.object({
+	name: z
+		.string('validation.NAME_FIELD_REQUIRED')
+		.min(1, 'validation.NAME_FIELD_REQUIRED')
+		.refine((val) => val.trim() !== '', 'validation.NAME_FIELD_EMPTY')
+		.max(100, 'validation.NAME_FIELD_TOO_LONG')
+		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED'),
+	birthday: z.string('validation.BIRTHDAY_FIELD_REQUIRED').refine((val) => {
+		const date = new Date(val);
+		return !isNaN(date.getTime());
+	}, 'validation.INVALID_BIRTHDAY'),
+	avatar: z
+		.url('validation.INVALID_AVATAR_URL')
+		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED'),
+});
 
-export type UserForAdminResponseDto = z.infer<
-	typeof userForAdminResponseSchema
->;
+export type UserUpdateProfileDto = z.infer<typeof userUpdateProfileSchema>;

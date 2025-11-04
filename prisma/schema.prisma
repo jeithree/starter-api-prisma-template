@@ -19,7 +19,7 @@ model User {
     email                   String        @unique
     gender                  Gender?
     birthday                DateTime?
-    picture                 String?
+    avatar                  String?
     timezone                String?
     locale                  String?
     isEnabled               Boolean
