@@ -68,6 +68,8 @@ export const userUpdateProfileSchema = z.object({
 		.string('validation.INVALID_AVATAR')
 		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED')
 		.optional(),
+    timezone: z.string().optional(),
+    locale: z.string().optional(),
 });
 
 export type UserUpdateProfileDto = z.infer<typeof userUpdateProfileSchema>;

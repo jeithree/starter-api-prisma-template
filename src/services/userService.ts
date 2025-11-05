@@ -151,6 +151,14 @@ export const handleUserProfileUpdate = async (
 		updateData.avatar = `/uploads/avatars/${data.avatar}`;
 	}
 
+	if (data.timezone !== undefined) {
+		updateData.timezone = data.timezone;
+	}
+
+	if (data.locale !== undefined) {
+		updateData.locale = data.locale;
+	}
+
 	const updatedUser = await prisma.user.update({
 		where: {id: userId},
 		data: updateData,
