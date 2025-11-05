@@ -36,7 +36,7 @@ QueueManager.createQueue('passwordResetEmailQueue', {
 	concurrency: 10,
 });
 
-const assertUsernameDoesNotExists = async (username: string) => {
+export const assertUsernameDoesNotExists = async (username: string) => {
 	const usernameToLowerCase = username.toLowerCase();
 
 	const usernameFound = await prisma.user.findUnique({
@@ -58,7 +58,7 @@ const assertUsernameDoesNotExists = async (username: string) => {
 	}
 };
 
-const assertEmailDoesNotExists = async (email: string) => {
+export const assertEmailDoesNotExists = async (email: string) => {
 	const emailToLowerCase = email.toLowerCase();
 
 	const user = await prisma.user.findUnique({
@@ -99,7 +99,7 @@ export const createUsernameShorthand = (username: string) => {
 	return usernameShorthand;
 };
 
-const generateEmailVerificationToken = () => {
+export const generateEmailVerificationToken = () => {
 	const randomToken = uuidv4();
 	const token = randomToken.split('-')[0];
 	return token;
@@ -154,7 +154,7 @@ const createUser = async ({
 	return user;
 };
 
-const sendEmailVerificationToken = ({
+export const sendEmailVerificationToken = ({
 	email,
 	emailVerificationToken,
 }: {

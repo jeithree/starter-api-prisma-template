@@ -7,7 +7,7 @@ import {AuthenticationError, NotFoundError} from '../lib/domainError.ts';
 import {hashPassword, isPasswordValid} from '../helpers/password.ts';
 import {translate} from '../helpers/helper.ts';
 
-const getUserById = async (userId: string) => {
+export const getUserById = async (userId: string) => {
 	const user = await prisma.user.findUnique({
 		where: {id: userId},
 		include: {auth: true},

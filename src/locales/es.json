@@ -39,8 +39,12 @@
 		"INVALID_REQUEST": "Solicitud inválida",
 		"TOKEN_REQUIRED": "El token es requerido",
 		"TOKEN_FIELD_EMPTY": "El token no puede estar vacío",
-        "INVALID_FILE_IMAGE_TYPE": "El tipo de archivo de imagen no es válido, solo se permiten PNG, JPG, JPEG y GIF",
-        "FILE_IMAGE_TOO_LARGE": "El tamaño del archivo de imagen es demasiado grande, el máximo permitido es {{maxFileSize}} MB"
+		"INVALID_FILE_IMAGE_TYPE": "El tipo de archivo de imagen no es válido, solo se permiten PNG, JPG, JPEG y GIF",
+		"FILE_IMAGE_TOO_LARGE": "El tamaño del archivo de imagen es demasiado grande, el máximo permitido es {{maxFileSize}} MB",
+		"INVALID_ROLE": "El rol ingresado no es válido",
+		"IS_ENABLED_FIELD_REQUIRED": "Este campo es requerido",
+		"SHOULD_SEND_EMAIL_VERIFICATION_FIELD_REQUIRED": "Este campo es requerido",
+        "USER_ID_FIELD_REQUIRED": "El ID de usuario es requerido"
 	},
 	"rateLimit": {
 		"CREATE_ACCOUNT_RATE_LIMIT_EXCEEDED": "Has excedido el límite de creación de cuentas, intentalo mas tarde",
@@ -84,14 +88,18 @@
 			"INVALID_CURRENT_PASSWORD": "La contraseña actual no coincide",
 			"EMAIL_VERIFICATION_FAILED": "No se realizar la verificación del email, vuelve a intentarlo",
 			"MISSING_REQUIRED_FIELDS": "Faltan campos requeridos",
-			"ACCOUNT_NOT_ENABLED": "La cuenta no está habilitada, comunícate con el soporte"
+			"ACCOUNT_NOT_ENABLED": "La cuenta no está habilitada, comunícate con el soporte",
+            "CANNOT_DELETE_ADMIN_USER": "No se puede eliminar un usuario administrador"
 		},
 		"success": {
 			"USER_CREATED": "Cuenta creada exitosamente, a continuación debes verificar tu email",
 			"USER_UPDATED": "Cuenta actualizada exitosamente",
 			"PASSWORD_UPDATED_FROM_LINK": "Contraseña actualizada exitosamente, ya puedes iniciar sesión con tu nueva contraseña",
 			"EMAIL_VERIFIED": "Email verificado exitosamente, ya puedes iniciar sesión",
-			"USER_PROFILE_UPDATED": "Perfil de usuario actualizado exitosamente"
+			"USER_PROFILE_UPDATED": "Perfil de usuario actualizado exitosamente",
+            "USER_CREATED_BY_ADMIN": "Usuario creado exitosamente",
+            "USER_UPDATED_BY_ADMIN": "Usuario actualizado exitosamente",
+            "USER_DELETED_BY_ADMIN": "Usuario eliminado exitosamente"
 		}
 	},
 	"email": {

@@ -1,4 +1,5 @@
 import type {paginationQueryDto} from '../types/pagination.ts';
+import type {AdminCreateUserDto, AdminUpdateUserDto} from '../types/admin.ts';
 import prisma from '../prisma.ts';
 import * as Logger from '../helpers/logger.ts';
 import {
@@ -10,10 +11,14 @@ import {
 	ADMIN_EMAIL,
 	ADMIN_PASSWORD,
 	TIME_ZONE,
-    LOCALE,
+	LOCALE,
 } from '../configs/basic.ts';
 import {createUsernameShorthand} from './authService.ts';
 import {hashPassword} from '../helpers/password.ts';
+import * as AuthService from './authService.ts';
+import * as UserService from './userService.ts';
+import * as SessionService from './sessionService.ts';
+import {ConflictError} from '../lib/domainError.ts';
 
 export const createInitialAdminAccount = async () => {
 	try {
@@ -36,7 +41,7 @@ export const createInitialAdminAccount = async () => {
 				email: ADMIN_EMAIL.toLowerCase(),
 				role: 'ADMIN',
 				timezone: TIME_ZONE,
-                locale: LOCALE,
+				locale: LOCALE,
 				isEnabled: true,
 				auth: {
 					create: {
@@ -96,4 +101,133 @@ export const getUsers = async (query: paginationQueryDto) => {
 		users: results,
 		pagination: pagination,
 	};
+};
+
+export const handleUserCreation = async (data: AdminCreateUserDto) => {
+	await AuthService.assertUsernameDoesNotExists(data.username);
+	await AuthService.assertEmailDoesNotExists(data.email);
+
+	const usernameShorthand = createUsernameShorthand(data.username);
+	const hashedPassword = await hashPassword(data.password);
+
+	const useEmailVerification = data.shouldSendEmailVerification;
+
+	const emailVerificationToken = useEmailVerification
+		? AuthService.generateEmailVerificationToken()
+		: null;
+
+	await prisma.user.create({
+		data: {
+			name: data.username,
+			username: data.username.toLowerCase(),
+			usernameToDisplay: data.username,
+			usernameShorthand: usernameShorthand,
+			email: data.email.toLowerCase(),
+			role: data.role,
+			isEnabled: data.isEnabled,
+			timezone: TIME_ZONE,
+			locale: LOCALE,
+			auth: {
+				create: {
+					password: hashedPassword,
+					hasPassword: true,
+				},
+			},
+			...(useEmailVerification && {
+				emailVerification: {
+					create: {
+						isEmailVerified: false,
+						emailVerificationToken: emailVerificationToken,
+						emailVerificationTokenExpiresAt: emailVerificationToken
+							? new Date(Date.now() + 24 * 60 * 60 * 1000)
+							: null,
+					},
+				},
+			}),
+		},
+	});
+
+	if (useEmailVerification && emailVerificationToken) {
+		AuthService.sendEmailVerificationToken({
+			email: data.email,
+			emailVerificationToken: emailVerificationToken,
+		});
+	}
+};
+
+export const handleUserUpdate = async (data: AdminUpdateUserDto) => {
+	const user = await UserService.getUserById(data.userId);
+
+	if (user.username !== data.username) {
+		await AuthService.assertUsernameDoesNotExists(data.username);
+	}
+
+	if (user.email !== data.email) {
+		await AuthService.assertEmailDoesNotExists(data.email);
+	}
+
+	const useEmailVerification = data.shouldSendEmailVerification;
+
+	const emailVerificationToken = useEmailVerification
+		? AuthService.generateEmailVerificationToken()
+		: null;
+
+	const usernameShorthand = createUsernameShorthand(data.username);
+	const newpassword = data.password
+		? await hashPassword(data.password)
+		: undefined;
+
+	await prisma.user.update({
+		where: {id: data.userId},
+		data: {
+			name: data.username,
+			username: data.username.toLowerCase(),
+			usernameToDisplay: data.username,
+			usernameShorthand: usernameShorthand,
+			email: data.email.toLowerCase(),
+			role: data.role,
+			isEnabled: data.isEnabled,
+			...(newpassword && {
+				auth: {
+					update: {
+						password: newpassword,
+						hasPassword: true,
+					},
+				},
+			}),
+			...(useEmailVerification && {
+				emailVerification: {
+					update: {
+						isEmailVerified: false,
+						emailVerificationToken: emailVerificationToken,
+						emailVerificationTokenExpiresAt: emailVerificationToken
+							? new Date(Date.now() + 24 * 60 * 60 * 1000)
+							: null,
+					},
+				},
+			}),
+		},
+	});
+
+	if (useEmailVerification && emailVerificationToken) {
+		AuthService.sendEmailVerificationToken({
+			email: data.email,
+			emailVerificationToken: emailVerificationToken,
+		});
+	}
+};
+
+export const handleUserDeletion = async (userId: string) => {
+	const user = await UserService.getUserById(userId);
+	if (user.role === 'ADMIN') {
+		throw new ConflictError({
+			messageKey: 'user.errors.CANNOT_DELETE_ADMIN_USER',
+		});
+	}
+
+	await prisma.user.delete({
+		where: {id: userId},
+	});
+
+	await SessionService.deleteUserSessions(userId);
 };
