@@ -1,10 +1,14 @@
-import type {paginationQueryDto} from '../types/pagination.ts';
-import type {AdminCreateUserDto, AdminUpdateUserDto} from '../types/admin.ts';
+import type {
+	AdminCreateUserDto,
+	AdminUpdateUserDto,
+	AdminGetUsersDto,
+} from '../types/admin.ts';
 import prisma from '../prisma.ts';
 import * as Logger from '../helpers/logger.ts';
 import {
-	parsePaginationQuery,
 	getPaginationMetadata,
+	getPagination,
+	parseSortingQuery,
 } from '../helpers/pagination.ts';
 import {
 	ADMIN_USERNAME,
@@ -64,29 +68,36 @@ export const createInitialAdminAccount = async () => {
 	}
 };
 
-export const getUsers = async (query: paginationQueryDto) => {
-	const {where, select, orderBy, skipCount, pageSize, pageNumber} =
-		await parsePaginationQuery({
-			query: query,
-			defaultFilter: {role: 'USER'},
-		});
+export const getUsers = async (query: AdminGetUsersDto) => {
+	const {page, pageSize, skip} = getPagination(query);
+	const orderBy = parseSortingQuery(query.sort);
 
-	const [results, totalItems] = await Promise.all([
-		await prisma.user.findMany({
-			where,
-			...(select && {
-				select: {
-					...select,
-					emailVerification: {
-						select: {isEmailVerified: true},
-					},
-				},
-			}),
-			orderBy,
-			skip: skipCount,
-			take: pageSize,
+	const where = {
+		...(query.isEnabled && {isEnabled: query.isEnabled === 'true'}),
+		...(query.role && {role: query.role}),
+		...(query.search && {
+			OR: [
+				{usernameToDisplay: {contains: query.search}},
+				{email: {contains: query.search}},
+			],
 		}),
-		await prisma.user.count({where}),
+	};
+
+	const [users, totalItems] = await prisma.$transaction([
+		prisma.user.findMany({
+			where,
+			select: {
+				id: true,
+				usernameToDisplay: true,
+				role: true,
+				isEnabled: true,
+				createdAt: true,
+			},
+			skip,
+			take: pageSize,
+			orderBy,
+		}),
+		prisma.user.count(),
 	]);
 
 	if (totalItems === 0) {
@@ -95,10 +106,10 @@ export const getUsers = async (query: paginationQueryDto) => {
 		};
 	}
 
-	const pagination = getPaginationMetadata(totalItems, pageNumber, pageSize);
+	const pagination = getPaginationMetadata(totalItems, page, pageSize);
 
 	return {
-		users: results,
+		users: users,
 		pagination: pagination,
 	};
 };

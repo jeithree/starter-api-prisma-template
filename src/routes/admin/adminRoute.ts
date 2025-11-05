@@ -1,9 +1,9 @@
 import {Router} from 'express';
-import {paginationQuerySchema} from '../../types/pagination.ts';
+import {adminGetUsersSchema} from '../../types/admin.ts';
 import {
 	adminCreateUserSchema,
 	adminUpdateUserSchema,
-    adminDeleteUserSchema
+	adminDeleteUserSchema,
 } from '../../types/admin.ts';
 import {
 	validateQuery,
@@ -19,7 +19,7 @@ router.get(
 	authMiddleware.isLogged,
 	authMiddleware.isAdmin,
 	fingerprintMiddleware.validateFingerprint,
-	validateQuery(paginationQuerySchema),
+	validateQuery(adminGetUsersSchema),
 	adminController.getUsers
 );
 
@@ -42,12 +42,12 @@ router.put(
 );
 
 router.delete(
-    '/admins/users/',
-    authMiddleware.isLogged,
-    authMiddleware.isAdmin,
-    fingerprintMiddleware.validateFingerprint,
-    validateBody(adminDeleteUserSchema),
-    adminController.deleteUser
+	'/admins/users/',
+	authMiddleware.isLogged,
+	authMiddleware.isAdmin,
+	fingerprintMiddleware.validateFingerprint,
+	validateBody(adminDeleteUserSchema),
+	adminController.deleteUser
 );
 
 export default router;

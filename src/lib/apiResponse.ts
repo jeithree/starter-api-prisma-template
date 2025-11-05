@@ -1,4 +1,4 @@
-import type {ApiResponseDto} from '../types/apiResponse.ts';
+import type {ApiResponseDto} from '../types/shared/apiResponse.ts';
 import {translate} from '../helpers/helper.ts';
 
 class ApiResponse {

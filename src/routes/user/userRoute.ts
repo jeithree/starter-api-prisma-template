@@ -1,13 +1,9 @@
 import {Router} from 'express';
-// import {paginationQuerySchema} from '../../types/pagination.ts';
 import {
 	userUpdatePasswordSchema,
 	userUpdateProfileSchema,
 } from '../../types/user.ts';
-import {
-	validateBody,
-	// validateQuery,
-} from '../../middlewares/validationMiddleware.ts';
+import {validateBody} from '../../middlewares/validationMiddleware.ts';
 import * as authMiddleware from '../../middlewares/authMiddleware.ts';
 import * as fingerprintMiddleware from '../../middlewares/fingerprintMiddleware.ts';
 import * as userController from '../../controllers/userController.ts';
@@ -15,6 +11,7 @@ import * as userController from '../../controllers/userController.ts';
 import imageUploadMiddleware from '../../middlewares/imageUploadMiddleware.ts';
 const router = Router();
 
+// TODO: Add rate limiting middleware where appropriate
 router.get(
 	'/users/me',
 	authMiddleware.isLogged,
@@ -22,7 +19,6 @@ router.get(
 	userController.getUserProfile
 );
 
-// maybe add rate limiter middleware here
 router.put(
 	'/users/profile',
 	authMiddleware.isLogged,

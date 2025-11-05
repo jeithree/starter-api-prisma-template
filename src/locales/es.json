@@ -44,7 +44,7 @@
 		"INVALID_ROLE": "El rol ingresado no es válido",
 		"IS_ENABLED_FIELD_REQUIRED": "Este campo es requerido",
 		"SHOULD_SEND_EMAIL_VERIFICATION_FIELD_REQUIRED": "Este campo es requerido",
-        "USER_ID_FIELD_REQUIRED": "El ID de usuario es requerido"
+		"USER_ID_FIELD_REQUIRED": "El ID de usuario es requerido"
 	},
 	"rateLimit": {
 		"CREATE_ACCOUNT_RATE_LIMIT_EXCEEDED": "Has excedido el límite de creación de cuentas, intentalo mas tarde",
@@ -89,7 +89,7 @@
 			"EMAIL_VERIFICATION_FAILED": "No se realizar la verificación del email, vuelve a intentarlo",
 			"MISSING_REQUIRED_FIELDS": "Faltan campos requeridos",
 			"ACCOUNT_NOT_ENABLED": "La cuenta no está habilitada, comunícate con el soporte",
-            "CANNOT_DELETE_ADMIN_USER": "No se puede eliminar un usuario administrador"
+			"CANNOT_DELETE_ADMIN_USER": "No se puede eliminar un usuario administrador"
 		},
 		"success": {
 			"USER_CREATED": "Cuenta creada exitosamente, a continuación debes verificar tu email",
@@ -97,9 +97,9 @@
 			"PASSWORD_UPDATED_FROM_LINK": "Contraseña actualizada exitosamente, ya puedes iniciar sesión con tu nueva contraseña",
 			"EMAIL_VERIFIED": "Email verificado exitosamente, ya puedes iniciar sesión",
 			"USER_PROFILE_UPDATED": "Perfil de usuario actualizado exitosamente",
-            "USER_CREATED_BY_ADMIN": "Usuario creado exitosamente",
-            "USER_UPDATED_BY_ADMIN": "Usuario actualizado exitosamente",
-            "USER_DELETED_BY_ADMIN": "Usuario eliminado exitosamente"
+			"USER_CREATED_BY_ADMIN": "Usuario creado exitosamente",
+			"USER_UPDATED_BY_ADMIN": "Usuario actualizado exitosamente",
+			"USER_DELETED_BY_ADMIN": "Usuario eliminado exitosamente"
 		}
 	},
 	"email": {
@@ -118,5 +118,6 @@
 				"QUEUE_NOT_FOUND": "La queue '{{name}}' no existe"
 			}
 		}
-	}
+	},
+	"Invalid option": " expected one of \"USER\"|\"MANAGER\""
 }

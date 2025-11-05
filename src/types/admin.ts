@@ -1,5 +1,12 @@
 import {z} from 'zod';
 import {NOT_ALLOWED_USERNAMES} from '../configs/basic.ts';
+import {paginationQuerySchema} from './pagination.ts';
+
+export const adminGetUsersSchema = paginationQuerySchema.extend({
+	role: z.enum(['USER', 'ADMIN', 'MANAGER']).optional(),
+	isEnabled: z.string().optional(),
+});
+export type AdminGetUsersDto = z.infer<typeof adminGetUsersSchema>;
 
 export const adminCreateUserSchema = z.object({
 	username: z

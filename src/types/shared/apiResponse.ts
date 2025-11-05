@@ -15,3 +15,13 @@ export type ApiResponseDto<T = unknown> = {
 	data?: T;
 	error?: ApiError;
 };
+
+export type paginationMetadataResponse = {
+	totalItems: number;
+	totalPages: number;
+	currentPage: number;
+	nextPage: number | null;
+	previousPage: number | null;
+	hasNextPage: boolean;
+	hasPreviousPage: boolean;
+};
