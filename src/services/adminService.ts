@@ -265,11 +265,18 @@ export const getActiveSessions = async (
 	const {page, pageSize, skip} = getPagination(query);
 	const orderBy = parseSortingQuery(query.sort);
 
+	// Extract filters from query
+	const filters = {
+		search: query.search,
+		role: query.role,
+	};
+
 	const {sessions, total} = await SessionService.getSessionsPaginated(
 		currentSessionId,
 		pageSize,
 		skip,
-		orderBy
+		orderBy,
+        filters
 	);
 
 	const pagination = getPaginationMetadata(total, page, pageSize);

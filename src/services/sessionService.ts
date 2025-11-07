@@ -69,9 +69,13 @@ export const getSessionsPaginated = async (
 	currentSessionId: string,
 	pageSize: number,
 	skip: number,
-	orderBy: Record<string, 'asc' | 'desc'>
+	orderBy: Record<string, 'asc' | 'desc'>,
+	filters?: {
+		search?: string;
+		role?: 'USER' | 'ADMIN' | 'MANAGER';
+	}
 ) => {
-	const allSessions = await getAllSessions();
+	let allSessions = await getAllSessions();
 	console.log('All Sessions:', allSessions);
 
 	if (allSessions.length === 0) {
@@ -79,6 +83,22 @@ export const getSessionsPaginated = async (
 			sessions: [],
 			total: 0,
 		};
+	}
+
+	// Apply filters
+	if (filters?.search) {
+		const searchLower = filters.search.toLowerCase();
+		allSessions = allSessions.filter(
+			({session}) =>
+				session.usernameToDisplay?.toLowerCase().includes(searchLower) ||
+				session.email?.toLowerCase().includes(searchLower)
+		);
+	}
+
+	if (filters?.role) {
+		allSessions = allSessions.filter(
+			({session}) => session.role === filters.role
+		);
 	}
 
 	// Sort sessions by the requested field (defaults to createdAt)
@@ -101,6 +121,9 @@ export const getSessionsPaginated = async (
 		return 0;
 	});
 
+	// Get total after filtering but before pagination
+	const totalFiltered = allSessions.length;
+
 	// Paginate sessions
 	const paginatedSessions = allSessions.slice(skip, skip + pageSize);
 	return {
@@ -114,10 +137,10 @@ export const getSessionsPaginated = async (
 			timezone: session.timezone,
 			locale: session.locale,
 			isLogged: session.isLogged,
-            createdAt: session.createdAt,
+			createdAt: session.createdAt,
 			// if current session id found then add isCurrentSession: true
 			isCurrentSession: key === `${SESSION_PREFIX}${currentSessionId}`,
 		})),
-		total: allSessions.length,
+		total: totalFiltered,
 	};
 };
