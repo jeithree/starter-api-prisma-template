@@ -1,12 +1,25 @@
 import type {Request, Response, NextFunction} from 'express';
-import type {paginationQueryDto} from '../types/pagination.ts';
 import type {
+	AdminGetUsersDto,
 	AdminCreateUserDto,
 	AdminUpdateUserDto,
-	AdminDeleteUserDto,
 } from '../types/admin.ts';
 import * as AdminService from '../services/adminService.ts';
 import ApiResponse from '../lib/apiResponse.ts';
+
+export const getUserById = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const userId = req.params.userId;
+		const data = await AdminService.getUserById(userId);
+		return res.status(200).json(ApiResponse.success({data}));
+	} catch (error) {
+		return next(error);
+	}
+};
 
 export const getUsers = async (
 	req: Request,
@@ -14,7 +27,7 @@ export const getUsers = async (
 	next: NextFunction
 ) => {
 	try {
-		const query = req.query as paginationQueryDto;
+		const query = req.query as AdminGetUsersDto;
 		const data = await AdminService.getUsers(query);
 		return res.status(200).json(ApiResponse.success({data}));
 	} catch (error) {
@@ -46,8 +59,10 @@ export const updateUser = async (
 	next: NextFunction
 ) => {
 	try {
+        const userId = req.params.userId;
 		const data = req.body as AdminUpdateUserDto;
-		await AdminService.handleUserUpdate(data);
+
+		await AdminService.handleUserUpdate(userId, data);
 		return res.status(200).json(
 			ApiResponse.success({
 				messageKey: 'user.success.USER_UPDATED_BY_ADMIN',
@@ -64,8 +79,8 @@ export const deleteUser = async (
 	next: NextFunction
 ) => {
 	try {
-		const data = req.body as AdminDeleteUserDto;
-		await AdminService.handleUserDeletion(data.userId);
+		const userId = req.params.userId;
+		await AdminService.handleUserDeletion(userId);
 
 		return res.status(200).json(
 			ApiResponse.success({

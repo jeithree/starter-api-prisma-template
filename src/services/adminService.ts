@@ -22,7 +22,7 @@ import {hashPassword} from '../helpers/password.ts';
 import * as AuthService from './authService.ts';
 import * as UserService from './userService.ts';
 import * as SessionService from './sessionService.ts';
-import {ConflictError} from '../lib/domainError.ts';
+import {ConflictError, NotFoundError} from '../lib/domainError.ts';
 
 export const createInitialAdminAccount = async () => {
 	try {
@@ -68,6 +68,28 @@ export const createInitialAdminAccount = async () => {
 	}
 };
 
+export const getUserById = async (userId: string) => {
+	const user = await prisma.user.findUnique({
+		where: {id: userId},
+		select: {
+			id: true,
+			usernameToDisplay: true,
+			email: true,
+			role: true,
+			isEnabled: true,
+			createdAt: true,
+		},
+	});
+
+	if (!user) {
+		throw new NotFoundError({
+			messageKey: 'user.errors.USER_NOT_FOUND',
+		});
+	}
+
+	return user;
+};
+
 export const getUsers = async (query: AdminGetUsersDto) => {
 	const {page, pageSize, skip} = getPagination(query);
 	const orderBy = parseSortingQuery(query.sort);
@@ -89,6 +111,9 @@ export const getUsers = async (query: AdminGetUsersDto) => {
 			select: {
 				id: true,
 				usernameToDisplay: true,
+				email: true,
+				timezone: true,
+				locale: true,
 				role: true,
 				isEnabled: true,
 				createdAt: true,
@@ -100,13 +125,14 @@ export const getUsers = async (query: AdminGetUsersDto) => {
 		prisma.user.count(),
 	]);
 
+	const pagination = getPaginationMetadata(totalItems, page, pageSize);
+
 	if (totalItems === 0) {
 		return {
 			users: [],
+			pagination: pagination,
 		};
 	}
-
-	const pagination = getPaginationMetadata(totalItems, page, pageSize);
 
 	return {
 		users: users,
@@ -120,12 +146,6 @@ export const handleUserCreation = async (data: AdminCreateUserDto) => {
 
 	const usernameShorthand = createUsernameShorthand(data.username);
 	const hashedPassword = await hashPassword(data.password);
-
-	const useEmailVerification = data.shouldSendEmailVerification;
-
-	const emailVerificationToken = useEmailVerification
-		? AuthService.generateEmailVerificationToken()
-		: null;
 
 	await prisma.user.create({
 		data: {
@@ -144,30 +164,15 @@ export const handleUserCreation = async (data: AdminCreateUserDto) => {
 					hasPassword: true,
 				},
 			},
-			...(useEmailVerification && {
-				emailVerification: {
-					create: {
-						isEmailVerified: false,
-						emailVerificationToken: emailVerificationToken,
-						emailVerificationTokenExpiresAt: emailVerificationToken
-							? new Date(Date.now() + 24 * 60 * 60 * 1000)
-							: null,
-					},
-				},
-			}),
 		},
 	});
-
-	if (useEmailVerification && emailVerificationToken) {
-		AuthService.sendEmailVerificationToken({
-			email: data.email,
-			emailVerificationToken: emailVerificationToken,
-		});
-	}
 };
 
-export const handleUserUpdate = async (data: AdminUpdateUserDto) => {
-	const user = await UserService.getUserById(data.userId);
+export const handleUserUpdate = async (
+	userId: string,
+	data: AdminUpdateUserDto
+) => {
+	const user = await UserService.getUserById(userId);
 
 	if (user.username !== data.username) {
 		await AuthService.assertUsernameDoesNotExists(data.username);
@@ -177,19 +182,13 @@ export const handleUserUpdate = async (data: AdminUpdateUserDto) => {
 		await AuthService.assertEmailDoesNotExists(data.email);
 	}
 
-	const useEmailVerification = data.shouldSendEmailVerification;
-
-	const emailVerificationToken = useEmailVerification
-		? AuthService.generateEmailVerificationToken()
-		: null;
-
 	const usernameShorthand = createUsernameShorthand(data.username);
 	const newpassword = data.password
 		? await hashPassword(data.password)
 		: undefined;
 
 	await prisma.user.update({
-		where: {id: data.userId},
+		where: {id: userId},
 		data: {
 			name: data.username,
 			username: data.username.toLowerCase(),
@@ -206,25 +205,20 @@ export const handleUserUpdate = async (data: AdminUpdateUserDto) => {
 					},
 				},
 			}),
-			...(useEmailVerification && {
+			...(data.email !== user.email && {
 				emailVerification: {
 					update: {
 						isEmailVerified: false,
-						emailVerificationToken: emailVerificationToken,
-						emailVerificationTokenExpiresAt: emailVerificationToken
-							? new Date(Date.now() + 24 * 60 * 60 * 1000)
-							: null,
+						emailVerificationToken: null,
+						emailVerificationTokenExpiresAt: null,
 					},
 				},
 			}),
 		},
 	});
 
-	if (useEmailVerification && emailVerificationToken) {
-		AuthService.sendEmailVerificationToken({
-			email: data.email,
-			emailVerificationToken: emailVerificationToken,
-		});
+	if (data.isEnabled === false) {
+		await SessionService.deleteUserSessions(userId);
 	}
 };
 

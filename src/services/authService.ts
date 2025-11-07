@@ -20,7 +20,7 @@ import {
 import * as Logger from '../helpers/logger.ts';
 import {
 	SITE_NAME,
-	EMAIL_VERIFICATION_TOKEN_EXPIRATION_MINUTES,
+	EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS,
 	PASSWORD_VERIFICATION_TOKEN_EXPIRATION_MINUTES,
 	SITE_URL,
 	LOGIN_ATTEMPTS_FOR_10_MINUTES_BLOCK,
@@ -130,7 +130,7 @@ const createUser = async ({
 			email: data.email,
 			role: role,
 			timezone: data.timezone,
-            locale: data.locale,
+			locale: data.locale,
 			isEnabled: isEnabled,
 			auth: {
 				create: {
@@ -143,7 +143,10 @@ const createUser = async ({
 					isEmailVerified: isEmailVerified,
 					emailVerificationToken: emailVerificationToken,
 					emailVerificationTokenExpiresAt: emailVerificationToken
-						? new Date(Date.now() + 24 * 60 * 60 * 1000)
+						? new Date(
+								Date.now() +
+									EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
+						  )
 						: null, // 24 hours from now
 				},
 			},
@@ -170,7 +173,7 @@ export const sendEmailVerificationToken = ({
                     <html>
                         <body>
                             Tu código de verificación de email es <b>${emailVerificationToken}</b></br>
-                            El código solo es valido por ${EMAIL_VERIFICATION_TOKEN_EXPIRATION_MINUTES} minutes.
+                            El código solo es valido por ${EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS} minutes.
                         </body>
                     </html>`,
 			});
@@ -273,9 +276,9 @@ const assertEmailVerificationTokenIsExpired = (
 		throw new ForbiddenError({
 			messageKey: 'user.errors.EMAIL_VERIFICATION_TOKEN_NOT_EXPIRED',
 			replacements: {
-				waitTime: String(EMAIL_VERIFICATION_TOKEN_EXPIRATION_MINUTES),
+				waitTime: String(EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS),
 				timeLeft: String(minutesLeftToRequestNewEmailVerificationToken),
-				unit: translate(`units.minutes`),
+				unit: translate(`units.hours`),
 			},
 		});
 	}
@@ -283,9 +286,15 @@ const assertEmailVerificationTokenIsExpired = (
 
 const setUserEmailAsVerified = async (userId: string) => {
 	try {
-		await prisma.emailVerification.update({
+		await prisma.emailVerification.upsert({
 			where: {userId: userId},
-			data: {
+			update: {
+				isEmailVerified: true,
+				emailVerificationToken: null,
+				emailVerificationTokenExpiresAt: null,
+			},
+			create: {
+				userId: userId,
 				isEmailVerified: true,
 				emailVerificationToken: null,
 				emailVerificationTokenExpiresAt: null,
@@ -541,13 +550,23 @@ const handleEmailIsNotVerified = async (
 ) => {
 	if (!isEmailVerified) {
 		const emailVerificationToken = generateEmailVerificationToken();
-		const result = await prisma.emailVerification.update({
+		const result = await prisma.emailVerification.upsert({
 			where: {userId: userId},
-			data: {
+			update: {
 				emailVerificationToken: emailVerificationToken,
 				emailVerificationTokenExpiresAt: new Date(
-					Date.now() + EMAIL_VERIFICATION_TOKEN_EXPIRATION_MINUTES * 60 * 1000
-				), // EMAIL_VERIFICATION_TOKEN_EXPIRATION_MINUTES from now
+					Date.now() +
+						EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
+				),
+			},
+			create: {
+				userId: userId,
+				isEmailVerified: false,
+				emailVerificationToken: emailVerificationToken,
+				emailVerificationTokenExpiresAt: new Date(
+					Date.now() +
+						EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
+				),
 			},
 			include: {user: true},
 		});
@@ -653,8 +672,8 @@ export const handleSendEmailVerificationToken = async (email: string) => {
 		data: {
 			emailVerificationToken: newEmailVerificationToken,
 			emailVerificationTokenExpiresAt: new Date(
-				Date.now() + EMAIL_VERIFICATION_TOKEN_EXPIRATION_MINUTES * 60 * 1000
-			), // EMAIL_VERIFICATION_TOKEN_EXPIRATION_MINUTES from now
+				Date.now() + EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
+			),
 		},
 	});
 	sendEmailVerificationToken({

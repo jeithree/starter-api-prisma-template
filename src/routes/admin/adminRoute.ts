@@ -1,9 +1,8 @@
 import {Router} from 'express';
-import {adminGetUsersSchema} from '../../types/admin.ts';
 import {
+	adminGetUsersSchema,
 	adminCreateUserSchema,
 	adminUpdateUserSchema,
-	adminDeleteUserSchema,
 } from '../../types/admin.ts';
 import {
 	validateQuery,
@@ -13,6 +12,14 @@ import * as authMiddleware from '../../middlewares/authMiddleware.ts';
 import * as fingerprintMiddleware from '../../middlewares/fingerprintMiddleware.ts';
 import * as adminController from '../../controllers/adminController.ts';
 const router = Router();
+
+router.get(
+	'/admins/users/:userId',
+	authMiddleware.isLogged,
+	authMiddleware.isAdmin,
+	fingerprintMiddleware.validateFingerprint,
+	adminController.getUserById
+);
 
 router.get(
 	'/admins/users',
@@ -33,7 +40,7 @@ router.post(
 );
 
 router.put(
-	'admins/users/',
+	'/admins/users/:userId',
 	authMiddleware.isLogged,
 	authMiddleware.isAdmin,
 	fingerprintMiddleware.validateFingerprint,
@@ -42,11 +49,10 @@ router.put(
 );
 
 router.delete(
-	'/admins/users/',
+	'/admins/users/:userId',
 	authMiddleware.isLogged,
 	authMiddleware.isAdmin,
 	fingerprintMiddleware.validateFingerprint,
-	validateBody(adminDeleteUserSchema),
 	adminController.deleteUser
 );
 

@@ -39,14 +39,10 @@ export const adminCreateUserSchema = z.object({
 		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED'),
 	role: z.enum(['USER', 'ADMIN', 'MANAGER'], 'validation.INVALID_ROLE'),
 	isEnabled: z.boolean('validation.IS_ENABLED_FIELD_REQUIRED'),
-	shouldSendEmailVerification: z.boolean(
-		'validation.SHOULD_SEND_EMAIL_VERIFICATION_FIELD_REQUIRED'
-	),
 });
 export type AdminCreateUserDto = z.infer<typeof adminCreateUserSchema>;
 
 export const adminUpdateUserSchema = z.object({
-	userId: z.string('validation.USER_ID_FIELD_REQUIRED'),
 	username: z
 		.string('validation.USERNAME_FIELD_REQUIRED')
 		.min(4, 'validation.INVALID_USERNAME')
@@ -68,23 +64,25 @@ export const adminUpdateUserSchema = z.object({
 		.transform((val) => val.toLowerCase())
 		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED'),
 	password: z
-		.string('validation.PASSWORD_FIELD_REQUIRED')
-		.min(8, 'validation.INVALID_PASSWORD')
-		.refine((val) => /[a-z]/.test(val), 'validation.INVALID_PASSWORD')
-		.refine((val) => /[A-Z]/.test(val), 'validation.INVALID_PASSWORD')
-		.refine((val) => /[0-9]/.test(val), 'validation.INVALID_PASSWORD')
-		.refine((val) => /[^a-zA-Z0-9]/.test(val), 'validation.INVALID_PASSWORD')
-		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED')
+		.union([
+			z.literal(''), // Allow empty string
+			z
+				.string()
+				.min(8, 'validation.INVALID_PASSWORD')
+				.refine((val) => /[a-z]/.test(val), 'validation.INVALID_PASSWORD')
+				.refine((val) => /[A-Z]/.test(val), 'validation.INVALID_PASSWORD')
+				.refine((val) => /[0-9]/.test(val), 'validation.INVALID_PASSWORD')
+				.refine(
+					(val) => /[^a-zA-Z0-9]/.test(val),
+					'validation.INVALID_PASSWORD'
+				)
+				.refine(
+					(val) => !val.includes('<script>'),
+					'validation.NO_SCRIPT_ALLOWED'
+				),
+		])
 		.optional(),
 	role: z.enum(['USER', 'ADMIN', 'MANAGER'], 'validation.INVALID_ROLE'),
 	isEnabled: z.boolean('validation.IS_ENABLED_FIELD_REQUIRED'),
-	shouldSendEmailVerification: z.boolean(
-		'validation.SHOULD_SEND_EMAIL_VERIFICATION_FIELD_REQUIRED'
-	),
 });
 export type AdminUpdateUserDto = z.infer<typeof adminUpdateUserSchema>;
-
-export const adminDeleteUserSchema = z.object({
-	userId: z.string('validation.USER_ID_FIELD_REQUIRED'),
-});
-export type AdminDeleteUserDto = z.infer<typeof adminDeleteUserSchema>;
