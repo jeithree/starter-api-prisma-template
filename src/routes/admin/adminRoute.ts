@@ -66,4 +66,12 @@ router.get(
 	adminController.getActiveSessions
 );
 
+router.delete(
+	'/admins/sessions/:sessionId',
+	authMiddleware.isLogged,
+	authMiddleware.isAdmin,
+	fingerprintMiddleware.validateFingerprint,
+	adminController.deleteSession
+);
+
 export default router;

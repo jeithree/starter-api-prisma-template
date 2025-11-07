@@ -102,6 +102,15 @@
 			"USER_DELETED_BY_ADMIN": "Usuario eliminado exitosamente"
 		}
 	},
+	"session": {
+		"success": {
+			"SESSION_DELETED_BY_ADMIN": "Sesión eliminada exitosamente"
+		},
+		"errors": {
+			"SESSION_NOT_FOUND": "La sesión no existe",
+			"CANNOT_DELETE_CURRENT_SESSION": "No puedes eliminar tu sesión actual"
+		}
+	},
 	"email": {
 		"errors": {
 			"SEND_EMAIL_VERIFICATION_TOKEN_FAILED": "No se pudo enviar el código de verificación, vuelve a intentarlo",
@@ -118,6 +127,5 @@
 				"QUEUE_NOT_FOUND": "La queue '{{name}}' no existe"
 			}
 		}
-	},
-	"Invalid option": " expected one of \"USER\"|\"MANAGER\""
+	}
 }

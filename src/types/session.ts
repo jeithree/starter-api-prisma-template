@@ -15,6 +15,7 @@ export const sessionSchema = z.object({
 		ip: z.string().optional(),
 		deviceId: z.uuid(),
 	}),
+    createdAt: z.string().optional(),
     urlToRedirectOnSuccess: z.string().optional(),
     urlToRedirectOnError: z.string().optional(),
 });

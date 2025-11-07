@@ -1,21 +1,27 @@
 import redisClient from '../redisClient.ts';
+import {SESSION_PREFIX} from '../configs/basic.ts';
 
 const getSessionByUserId = async (userId: string) => {
-	const pattern = 'authsess:*';
-	const foundSessions = [];
+	const pattern = `${SESSION_PREFIX}*`;
+	const foundSessions: {key: string; session: any}[] = [];
 
 	// Use SCAN to iterate keys (avoids blocking Redis)
-	for await (const key of redisClient.scanIterator({MATCH: pattern})) {
-		const data = await redisClient.get(key[0]);
-		if (!data) continue;
+	for await (const chunk of redisClient.scanIterator({
+		MATCH: pattern,
+		COUNT: 200,
+	})) {
+		const keys = Array.isArray(chunk) ? (chunk as string[]) : [chunk as string];
 
-		try {
-			const session = JSON.parse(data);
-			if (session.userId === userId) {
-				foundSessions.push({key, session});
-			}
-		} catch {
-			continue;
+		for (const key of keys) {
+			const data = await redisClient.get(key);
+			if (!data) continue;
+
+			try {
+				const session = JSON.parse(data);
+				if (session.userId === userId) {
+					foundSessions.push({key, session});
+				}
+			} catch {}
 		}
 	}
 
@@ -23,18 +29,23 @@ const getSessionByUserId = async (userId: string) => {
 };
 
 const getAllSessions = async () => {
-	const pattern = 'authsess:*';
-	const allSessions = [];
+	const pattern = `${SESSION_PREFIX}*`;
+	const allSessions: {key: string; session: any}[] = [];
 
-	// Use SCAN to iterate keys (avoids blocking Redis)
-	for await (const key of redisClient.scanIterator({MATCH: pattern})) {
-		const data = await redisClient.get(key[0]);
-		if (!data) continue;
-		try {
-			const session = JSON.parse(data);
-			allSessions.push({key, session});
-		} catch {
-			continue;
+	for await (const chunk of redisClient.scanIterator({
+		MATCH: pattern,
+		COUNT: 500,
+	})) {
+		const keys = Array.isArray(chunk) ? (chunk as string[]) : [chunk as string];
+
+		for (const key of keys) {
+			const data = await redisClient.get(key);
+			if (!data) continue;
+
+			try {
+				const session = JSON.parse(data);
+				allSessions.push({key, session});
+			} catch {}
 		}
 	}
 
@@ -49,18 +60,19 @@ export const deleteUserSessions = async (userId: string) => {
 };
 
 export const deleteSessionById = async (sessionId: string) => {
-	const session = await redisClient.get(`authsess:${sessionId}`);
+	const session = await redisClient.get(`${SESSION_PREFIX}${sessionId}`);
 	if (!session) return;
-	await redisClient.del(`authsess:${sessionId}`);
+	await redisClient.del(`${SESSION_PREFIX}${sessionId}`);
 };
 
 export const getSessionsPaginated = async (
 	currentSessionId: string,
 	pageSize: number,
 	skip: number,
-	orderBy: any
+	orderBy: Record<string, 'asc' | 'desc'>
 ) => {
 	const allSessions = await getAllSessions();
+	console.log('All Sessions:', allSessions);
 
 	if (allSessions.length === 0) {
 		return {
@@ -69,32 +81,42 @@ export const getSessionsPaginated = async (
 		};
 	}
 
+	// Sort sessions by the requested field (defaults to createdAt)
+	const field = Object.keys(orderBy ?? {})[0] ?? 'createdAt';
+	const direction = (orderBy?.[field] ?? 'desc') as 'asc' | 'desc';
+
 	allSessions.sort((a, b) => {
-		for (const order of orderBy) {
-			const field = Object.keys(order)[0];
-			const direction = order[field];
-			if (a.session[field] < b.session[field])
-				return direction === 'asc' ? -1 : 1;
-			if (a.session[field] > b.session[field])
-				return direction === 'asc' ? 1 : -1;
-		}
+		// Support createdAt or fallback to lastTouched; generic fallback for other fields
+		const av =
+			field === 'createdAt'
+				? new Date(a.session.createdAt ?? a.session.lastTouched ?? 0).getTime()
+				: (a.session as any)[field];
+		const bv =
+			field === 'createdAt'
+				? new Date(b.session.createdAt ?? b.session.lastTouched ?? 0).getTime()
+				: (b.session as any)[field];
+
+		if (av < bv) return direction === 'asc' ? -1 : 1;
+		if (av > bv) return direction === 'asc' ? 1 : -1;
 		return 0;
 	});
 
 	// Paginate sessions
 	const paginatedSessions = allSessions.slice(skip, skip + pageSize);
 	return {
-		// scanIterator yields arrays like ['authsess:abc123'], so you need to access key[0].
 		sessions: paginatedSessions.map(({key, session}) => ({
-            // no need to expose all the session data, just the relevant fields
-			id: session.id,
-            userId: session.userId,
-            role: session.role,
-            usernameToDisplay: session.usernameToDisplay,
-            email: session.email,
-            isLogged: session.isLogged,
+			// no need to expose all the session data, just the relevant fields
+			id: key.replace(SESSION_PREFIX, ''),
+			userId: session.userId,
+			role: session.role,
+			usernameToDisplay: session.usernameToDisplay,
+			email: session.email,
+			timezone: session.timezone,
+			locale: session.locale,
+			isLogged: session.isLogged,
+            createdAt: session.createdAt,
 			// if current session id found then add isCurrentSession: true
-			isCurrentSession: key[0] === `authsess:${currentSessionId}`, // Add [0]
+			isCurrentSession: key === `${SESSION_PREFIX}${currentSessionId}`,
 		})),
 		total: allSessions.length,
 	};

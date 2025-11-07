@@ -4,7 +4,7 @@ import type {paginationMetadataResponse} from '../types/shared/apiResponse.ts';
 export const parseSortingQuery = (
 	sortQuery?: string,
 	defaultSort: Record<string, 'asc' | 'desc'> = {createdAt: 'desc'}
-) => {
+): Record<string, 'asc' | 'desc'> => {
 	if (sortQuery) {
 		const [field, order] = sortQuery.split(':');
 		return {[field]: order === 'desc' ? 'desc' : 'asc'};

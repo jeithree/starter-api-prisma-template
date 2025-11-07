@@ -3,11 +3,11 @@ import session from 'express-session';
 import {RedisStore} from 'connect-redis';
 import redisClient from '../redisClient.ts';
 import {SESSION_COOKIE} from '../configs/cookies.ts';
-import {SESSION_SECRET} from '../configs/basic.ts';
+import {SESSION_SECRET, SESSION_PREFIX} from '../configs/basic.ts';
 
 let redisStore = new RedisStore({
 	client: redisClient,
-	prefix: 'authsess:',
+	prefix: SESSION_PREFIX,
 });
 
 export const createSession = () => {

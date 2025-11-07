@@ -18,6 +18,7 @@ export const initializeAuthSession = (
     session.locale = user.locale;
     session.timezone = user.timezone;
     session.isLogged = true;
+    session.createdAt = new Date().toISOString();
 	session.cookie.maxAge = SESSION_COOKIE.maxAge;
 
 	const deviceId = uuidv4();

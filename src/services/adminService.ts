@@ -2,7 +2,7 @@ import type {
 	AdminCreateUserDto,
 	AdminUpdateUserDto,
 	AdminGetUsersDto,
-    AdminGetSessionsDto,
+	AdminGetSessionsDto,
 } from '../types/admin.ts';
 import prisma from '../prisma.ts';
 import * as Logger from '../helpers/logger.ts';
@@ -256,7 +256,7 @@ export const getActiveSessions = async (
 
 	if (total === 0) {
 		return {
-			users: [],
+			sessions: [],
 			pagination: pagination,
 		};
 	}
@@ -265,4 +265,16 @@ export const getActiveSessions = async (
 		sessions: sessions,
 		pagination: pagination,
 	};
+};
+
+export const deleteSession = async (
+	currentSessionId: string,
+	sessionId: string
+) => {
+    if (currentSessionId === sessionId) {
+        throw new ConflictError({
+            messageKey: 'session.errors.CANNOT_DELETE_CURRENT_SESSION',
+        });
+    }
+	await SessionService.deleteSessionById(sessionId);
 };

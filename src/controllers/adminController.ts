@@ -107,3 +107,23 @@ export const getActiveSessions = async (
 		return next(error);
 	}
 };
+
+export const deleteSession = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const mySessionId = req.session.id;
+		const sessionId = req.params.sessionId;
+		await AdminService.deleteSession(mySessionId, sessionId);
+
+		return res.status(200).json(
+			ApiResponse.success({
+				messageKey: 'session.success.SESSION_DELETED_BY_ADMIN',
+			})
+		);
+	} catch (error) {
+		return next(error);
+	}
+};

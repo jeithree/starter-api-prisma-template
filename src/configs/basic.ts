@@ -13,10 +13,14 @@ if (DEV_MODE) {
 if (!process.env.SESSION_SECRET) {
 	throw new Error('No SESSION_SECRET env variable set');
 }
+if (!process.env.SESSION_PREFIX) {
+	throw new Error('No SESSION_PREFIX env variable set');
+}
 if (!process.env.BCRYPT_SALT_ROUNDS) {
 	throw new Error('No BCRYPT_SALT_ROUNDS env variable set');
 }
 export const SESSION_SECRET = process.env.SESSION_SECRET;
+export const SESSION_PREFIX = process.env.SESSION_PREFIX;
 export const BCRYPT_SALT_ROUNDS = Number(process.env.BCRYPT_SALT_ROUNDS);
 
 if (!process.env.REDIS_HOST) {
