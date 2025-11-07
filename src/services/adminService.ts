@@ -221,6 +221,11 @@ export const handleUserUpdate = async (
 	if (data.isEnabled === false) {
 		await SessionService.deleteUserSessions(userId);
 	}
+
+    // Invalidate sessions if role has changed
+	if (user.role !== data.role) {
+		await SessionService.deleteUserSessions(userId);
+	}
 };
 
 export const handleUserDeletion = async (userId: string) => {
@@ -271,10 +276,10 @@ export const deleteSession = async (
 	currentSessionId: string,
 	sessionId: string
 ) => {
-    if (currentSessionId === sessionId) {
-        throw new ConflictError({
-            messageKey: 'session.errors.CANNOT_DELETE_CURRENT_SESSION',
-        });
-    }
+	if (currentSessionId === sessionId) {
+		throw new ConflictError({
+			messageKey: 'session.errors.CANNOT_DELETE_CURRENT_SESSION',
+		});
+	}
 	await SessionService.deleteSessionById(sessionId);
 };
