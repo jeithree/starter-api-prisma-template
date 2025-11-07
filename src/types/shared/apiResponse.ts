@@ -3,10 +3,22 @@ export type ValidationError = {
 	message: string;
 };
 
+export type AuthErrors = {
+	isEmailVerified?: boolean;
+	email?: string;
+	isAuthenticated?: boolean;
+	isAuthorized?: boolean;
+};
+
+export type ApiErrorData = {
+	validationErrors?: ValidationError[];
+	authErrors?: AuthErrors;
+};
+
 export type ApiError = {
 	message: string;
 	code: string;
-	data?: ValidationError[] | Record<string, unknown>;
+	data?: ApiErrorData;
 };
 
 export type ApiResponseDto<T = unknown> = {

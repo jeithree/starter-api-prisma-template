@@ -25,7 +25,6 @@ import {
 	SITE_URL,
 	LOGIN_ATTEMPTS_FOR_10_MINUTES_BLOCK,
 	LOGIN_ATTEMPTS_FOR_24_HOURS_BLOCK,
-	DEV_MODE,
 } from '../configs/basic.ts';
 import {translate} from '../helpers/helper.ts';
 
@@ -48,12 +47,14 @@ export const assertUsernameDoesNotExists = async (username: string) => {
 	if (usernameFound) {
 		throw new ConflictError({
 			messageKey: 'user.errors.USERNAME_ALREADY_TAKEN',
-			data: [
-				{
-					field: 'username',
-					message: translate('user.errors.USERNAME_ALREADY_TAKEN'),
-				},
-			],
+			data: {
+				validationErrors: [
+					{
+						field: 'username',
+						message: translate('user.errors.USERNAME_ALREADY_TAKEN'),
+					},
+				],
+			},
 		});
 	}
 };
@@ -68,12 +69,14 @@ export const assertEmailDoesNotExists = async (email: string) => {
 	if (user) {
 		throw new ConflictError({
 			messageKey: 'user.errors.EMAIL_ALREADY_EXISTS',
-			data: [
-				{
-					field: 'email',
-					message: translate('user.errors.EMAIL_ALREADY_EXISTS'),
-				},
-			],
+			data: {
+				validationErrors: [
+					{
+						field: 'email',
+						message: translate('user.errors.EMAIL_ALREADY_EXISTS'),
+					},
+				],
+			},
 		});
 	}
 };
@@ -84,12 +87,14 @@ const assertEmailIsNotVerified = (
 	if (isEmailVerified) {
 		throw new ConflictError({
 			messageKey: 'user.errors.EMAIL_ALREADY_VERIFIED',
-			data: [
-				{
-					field: 'email',
-					message: translate('user.errors.EMAIL_ALREADY_VERIFIED'),
-				},
-			],
+			data: {
+				validationErrors: [
+					{
+						field: 'email',
+						message: translate('user.errors.EMAIL_ALREADY_VERIFIED'),
+					},
+				],
+			},
 		});
 	}
 };
@@ -199,12 +204,14 @@ const getUserByEmail = async (email: string) => {
 	if (!user) {
 		throw new NotFoundError({
 			messageKey: 'user.errors.EMAIL_NOT_FOUND',
-			data: [
-				{
-					field: 'email',
-					message: translate('user.errors.EMAIL_NOT_FOUND'),
-				},
-			],
+			data: {
+				validationErrors: [
+					{
+						field: 'email',
+						message: translate('user.errors.EMAIL_NOT_FOUND'),
+					},
+				],
+			},
 		});
 	}
 	return user;
@@ -217,12 +224,14 @@ const assertEmailVerificationTokenIsValid = (
 	if (DBEmailVerificationToken !== emailVerificationToken) {
 		throw new AuthenticationError({
 			messageKey: 'user.errors.INVALID_EMAIL_VERIFICATION_TOKEN',
-			data: [
-				{
-					field: 'emailVerificationToken',
-					message: translate('user.errors.INVALID_EMAIL_VERIFICATION_TOKEN'),
-				},
-			],
+			data: {
+				validationErrors: [
+					{
+						field: 'emailVerificationToken',
+						message: translate('user.errors.INVALID_EMAIL_VERIFICATION_TOKEN'),
+					},
+				],
+			},
 		});
 	}
 };
@@ -244,12 +253,14 @@ const assertEmailVerificationTokenIsNotExpired = (
 	if (now.toMillis() > expires.toMillis()) {
 		throw new AuthenticationError({
 			messageKey: 'user.errors.EMAIL_VERIFICATION_TOKEN_EXPIRED',
-			data: [
-				{
-					field: 'emailVerificationToken',
-					message: translate('user.errors.EMAIL_VERIFICATION_TOKEN_EXPIRED'),
-				},
-			],
+			data: {
+				validationErrors: [
+					{
+						field: 'emailVerificationToken',
+						message: translate('user.errors.EMAIL_VERIFICATION_TOKEN_EXPIRED'),
+					},
+				],
+			},
 		});
 	}
 };
@@ -491,11 +502,13 @@ const handleFailedLoginAttempts = async (userId: string) => {
 	});
 
 	if (!updatedUser) {
+		await Logger.logToFile(
+			`Failed to increment failed login attempts for userId: ${userId}`,
+			'error'
+		);
+
 		throw new ServerError({
 			messageKey: 'server.errors.INTERNAL_SERVER_ERROR',
-			data: DEV_MODE
-				? {reason: 'Failed to increment failed login attempts'}
-				: null,
 		});
 	}
 
@@ -529,9 +542,13 @@ const blockAccount = async (
 	});
 
 	if (!updatedUser) {
+		await Logger.logToFile(
+			`Failed to block account for userId: ${userId}`,
+			'error'
+		);
+
 		throw new ServerError({
 			messageKey: 'server.errors.INTERNAL_SERVER_ERROR',
-			data: DEV_MODE ? {reason: 'Failed to block account'} : null,
 		});
 	}
 
@@ -579,8 +596,10 @@ const handleEmailIsNotVerified = async (
 		throw new ForbiddenError({
 			messageKey: 'auth.errors.EMAIL_NOT_VERIFIED',
 			data: {
-				isEmailVerified: result.isEmailVerified,
-				email: result.user.email,
+				authErrors: {
+					isEmailVerified: result.isEmailVerified,
+					email: result.user.email,
+				},
 			},
 		});
 	}

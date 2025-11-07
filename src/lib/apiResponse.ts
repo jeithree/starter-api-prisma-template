@@ -1,6 +1,10 @@
-import type {ApiResponseDto} from '../types/shared/apiResponse.ts';
+import type {
+	ApiResponseDto,
+	ApiErrorData,
+} from '../types/shared/apiResponse.ts';
 import {translate} from '../helpers/helper.ts';
 
+// TODO: revome translate from here and instead trasnlate it in the error and get the already trasnalted message here
 class ApiResponse {
 	constructor() {}
 
@@ -49,11 +53,11 @@ class ApiResponse {
 	static error({
 		messageKey,
 		replacements = {},
-		data = null,
+		data = undefined,
 	}: {
 		messageKey: string;
 		replacements?: Record<string, string>;
-		data?: any;
+		data?: ApiErrorData;
 	}) {
 		const response: ApiResponseDto = {
 			success: false,

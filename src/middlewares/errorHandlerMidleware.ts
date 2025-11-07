@@ -2,7 +2,6 @@ import type {Request, Response, NextFunction} from 'express';
 import {ZodError} from 'zod';
 import * as Logger from '../helpers/logger.ts';
 import {
-	DEV_MODE,
 	MAX_IMAGE_UPLOAD_SIZE,
 	MAX_PAYLOAD_SIZE,
 } from '../configs/basic.ts';
@@ -10,7 +9,7 @@ import DomainError, {ServerError} from '../lib/domainError.ts';
 import ApiResponse from '../lib/apiResponse.ts';
 import {REDIRECT_ERROR_COOKIE} from '../configs/cookies.ts';
 
-export const errorHandler = (
+export const errorHandler = async (
 	error: unknown,
 	_req: Request,
 	res: Response,
@@ -22,7 +21,7 @@ export const errorHandler = (
 		return res.status(413).json(
 			ApiResponse.error({
 				messageKey: 'server.errors.PAYLOAD_TOO_LARGE',
-				data: {maxAllowedSize: MAX_PAYLOAD_SIZE},
+				replacements: {maxAllowedSize: MAX_PAYLOAD_SIZE},
 			})
 		);
 	}
@@ -40,10 +39,11 @@ export const errorHandler = (
 	// This should never happen if all routes are properly validated
 	// But just in case, we handle it gracefully
 	if (error instanceof ZodError) {
+		await Logger.logToFile(`Unhandled ZodError: ${error.issues}`, 'warn');
+
 		return res.status(400).json(
 			ApiResponse.error({
 				messageKey: 'validation.INVALID_REQUEST',
-				data: DEV_MODE ? error.issues : null,
 			})
 		);
 	}

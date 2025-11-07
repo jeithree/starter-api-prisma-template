@@ -1,9 +1,11 @@
+import type {ApiErrorData} from '../types/shared/apiResponse.ts';
+
 type DomainErrorConfig = {
 	messageKey: string;
 	shouldRedirect?: boolean;
 	redirectUrl?: string;
 	replacements?: Record<string, string>;
-	data?: Record<string, unknown> | unknown[] | unknown | null;
+	data?: ApiErrorData; // now all errors should follow the same data structure
 };
 
 type NotFoundErrorConfig = DomainErrorConfig;
@@ -28,7 +30,7 @@ class DomainError extends Error {
 		shouldRedirect = false,
 		redirectUrl = '',
 		replacements: Record<string, string> = {},
-		data: Record<string, unknown> | unknown[] | unknown | null
+		data: ApiErrorData | undefined = undefined
 	) {
 		super(messageKey);
 		this.statusCode = statusCode;
@@ -53,7 +55,7 @@ export class NotFoundError extends DomainError {
 			shouldRedirect = false,
 			redirectUrl = '',
 			replacements = {},
-			data = null,
+			data = undefined,
 		} = config;
 		super(404, messageKey, shouldRedirect, redirectUrl, replacements, data);
 	}
@@ -67,7 +69,7 @@ export class AuthenticationError extends DomainError {
 			shouldRedirect = false,
 			redirectUrl = '',
 			replacements = {},
-			data = null,
+			data = undefined,
 		} = config;
 		super(401, messageKey, shouldRedirect, redirectUrl, replacements, data);
 	}
@@ -81,7 +83,7 @@ export class RateLimitError extends DomainError {
 			shouldRedirect = false,
 			redirectUrl = '',
 			replacements = {},
-			data = null,
+			data = undefined,
 		} = config;
 		super(429, messageKey, shouldRedirect, redirectUrl, replacements, data);
 	}
@@ -95,7 +97,7 @@ export class ConflictError extends DomainError {
 			shouldRedirect = false,
 			redirectUrl = '',
 			replacements = {},
-			data = null,
+			data = undefined,
 		} = config;
 		super(409, messageKey, shouldRedirect, redirectUrl, replacements, data);
 	}
@@ -109,7 +111,7 @@ export class ValidationError extends DomainError {
 			shouldRedirect = false,
 			redirectUrl = '',
 			replacements = {},
-			data = null,
+			data = undefined,
 		} = config;
 		super(400, messageKey, shouldRedirect, redirectUrl, replacements, data);
 	}
@@ -123,7 +125,7 @@ export class ForbiddenError extends DomainError {
 			shouldRedirect = false,
 			redirectUrl = '',
 			replacements = {},
-			data = null,
+			data = undefined,
 		} = config;
 		super(403, messageKey, shouldRedirect, redirectUrl, replacements, data);
 	}
@@ -137,7 +139,7 @@ export class ServerError extends DomainError {
 			shouldRedirect = false,
 			redirectUrl = '',
 			replacements = {},
-			data = null,
+			data = undefined,
 		} = config;
 		super(500, messageKey, shouldRedirect, redirectUrl, replacements, data);
 	}
