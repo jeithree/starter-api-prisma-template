@@ -118,6 +118,11 @@ export const getUsers = async (query: AdminGetUsersDto) => {
 				role: true,
 				isEnabled: true,
 				createdAt: true,
+				emailVerification: {
+					select: {
+						isEmailVerified: true,
+					},
+				},
 			},
 			skip,
 			take: pageSize,
@@ -136,7 +141,17 @@ export const getUsers = async (query: AdminGetUsersDto) => {
 	}
 
 	return {
-		users: users,
+		users: users.map((user) => ({
+			id: user.id,
+			usernameToDisplay: user.usernameToDisplay,
+			email: user.email,
+			timezone: user.timezone,
+			locale: user.locale,
+			role: user.role,
+			isEnabled: user.isEnabled,
+			createdAt: user.createdAt,
+			isEmailVerified: user.emailVerification?.isEmailVerified ?? false,
+		})),
 		pagination: pagination,
 	};
 };
@@ -222,7 +237,7 @@ export const handleUserUpdate = async (
 		await SessionService.deleteUserSessions(userId);
 	}
 
-    // Invalidate sessions if role has changed
+	// Invalidate sessions if role has changed
 	if (user.role !== data.role) {
 		await SessionService.deleteUserSessions(userId);
 	}
