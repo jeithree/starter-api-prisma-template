@@ -1,6 +1,8 @@
 import type {paginationQueryDto} from '../types/pagination.ts';
 import type {paginationMetadataResponse} from '../types/shared/apiResponse.ts';
 
+const DEFAULT_PAGE_SIZE = 12;
+
 export const parseSortingQuery = (
 	sortQuery?: string,
 	defaultSort: Record<string, 'asc' | 'desc'> = {createdAt: 'desc'}
@@ -14,7 +16,9 @@ export const parseSortingQuery = (
 };
 
 export const getPagination = (query: paginationQueryDto) => {
-	const pageSize = query.pageSize ? parseInt(query.pageSize) : 12;
+	const pageSize = query.pageSize
+		? parseInt(query.pageSize)
+		: DEFAULT_PAGE_SIZE;
 	const page = query.page ? parseInt(query.page) : 1;
 	const skip = (page - 1) * pageSize;
 
