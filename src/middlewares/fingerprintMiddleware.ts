@@ -48,8 +48,7 @@ export const validateFingerprint = (
 			new AuthenticationError({
 				messageKey: 'auth.errors.NOT_AUTHENTICATED',
 				data: {
-					notAuthorized: true,
-					isLogged: false,
+					isAuthenticated: false,
 				},
 			})
 		);
@@ -83,8 +82,7 @@ export const validateFingerprint = (
 			new AuthenticationError({
 				messageKey: 'auth.errors.NOT_AUTHENTICATED',
 				data: {
-					notAuthorized: true,
-					isLogged: false,
+					isAuthenticated: true,
 				},
 			})
 		);

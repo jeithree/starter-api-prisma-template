@@ -29,7 +29,7 @@ export const isNotLogged = (
 		return next(
 			new ForbiddenError({
 				messageKey: 'auth.errors.ALREADY_LOGGED_IN',
-				data: {notAuthorized: true, isLogged: true},
+				data: {isAuthenticated: true},
 			})
 		);
 	}
@@ -45,7 +45,7 @@ export const isLogged = (req: Request, _res: Response, next: NextFunction) => {
 		return next(
 			new ForbiddenError({
 				messageKey: 'auth.errors.NOT_LOGGED_IN',
-				data: {notAuthorized: true, isLogged: false},
+				data: {isAuthenticated: false},
 			})
 		);
 	}
@@ -70,7 +70,7 @@ export const isRoleAuthorized = (
 			return next(
 				new ForbiddenError({
 					messageKey: 'auth.errors.INSUFFICIENT_PERMISSIONS',
-					data: {notAuthorized: true, userRole: req.session?.role || 'USER'},
+					data: {isAuthorized: false},
 				})
 			);
 		}
