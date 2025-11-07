@@ -15,16 +15,16 @@ const router = Router();
 router.get(
 	'/users/me',
 	authMiddleware.isLogged,
-	authMiddleware.isRoleAuthorized('ALL'),
 	fingerprintMiddleware.validateFingerprint,
+    authMiddleware.isRoleAuthorized('ALL'),
 	userController.getUserProfile
 );
 
 router.put(
 	'/users/profile',
 	authMiddleware.isLogged,
-    authMiddleware.isRoleAuthorized('ALL'),
 	fingerprintMiddleware.validateFingerprint,
+    authMiddleware.isRoleAuthorized('ALL'),
 	imageUploadMiddleware.single('avatar'),
 	validateBody(userUpdateProfileSchema),
 	userController.updateUserProfile
@@ -33,8 +33,8 @@ router.put(
 router.put(
 	'/users/password',
 	authMiddleware.isLogged,
-    authMiddleware.isRoleAuthorized('ALL'),
 	fingerprintMiddleware.validateFingerprint,
+    authMiddleware.isRoleAuthorized('ALL'),
 	validateBody(userUpdatePasswordSchema),
 	userController.updatePasswordAfterValidatingOldOne
 );

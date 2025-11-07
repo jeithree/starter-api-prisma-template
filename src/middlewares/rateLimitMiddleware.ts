@@ -1,7 +1,10 @@
 import type {Request, Response, NextFunction} from 'express';
 import rateLimit from 'express-rate-limit';
 import * as Logger from '../helpers/logger.ts';
+import {translate} from '../helpers/helper.ts';
 import {RateLimitError} from '../lib/domainError.ts';
+
+//TODO: Decide if the data will be replacements or data object in the RateLimitError
 
 export const createAccountLimiter = rateLimit({
 	windowMs: 60 * 60 * 1000,
@@ -14,10 +17,10 @@ export const createAccountLimiter = rateLimit({
 		next(
 			new RateLimitError({
 				messageKey: 'rateLimit.CREATE_ACCOUNT_RATE_LIMIT_EXCEEDED',
-				data: {
-					maxAllowedAttempts: 5,
-					timeWindowNumber: 1,
-					timeWindowUnit: 'hour',
+				replacements: {
+					maxAllowedAttempts: '5',
+					timeWindowNumber: '1',
+					timeWindowUnit: translate('units.hour'),
 				},
 			})
 		);
@@ -63,10 +66,10 @@ export const emailTokenLimiter = rateLimit({
 		next(
 			new RateLimitError({
 				messageKey: 'rateLimit.EMAIL_VERIFICATION_TOKEN_RATE_LIMIT_EXCEEDED',
-				data: {
-					maxAllowedAttempts: 5,
-					timeWindowNumber: 10,
-					timeWindowUnit: 'minutes',
+                replacements: {
+					maxAllowedAttempts: '5',
+					timeWindowNumber: '10',
+					timeWindowUnit: translate('units.minutes'),
 				},
 			})
 		);
@@ -96,7 +99,7 @@ export const passwordTokenLimiter = rateLimit({
 
 export const generalLimiter = rateLimit({
 	windowMs: 15 * 60 * 1000,
-	max: 100,
+	max: 200,
 	handler: (req: Request, _res: Response, next: NextFunction) => {
 		Logger.logToFile(
 			`Rate limit exceeded for general requests: ${req.ip}`,

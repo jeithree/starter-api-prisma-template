@@ -73,6 +73,7 @@ router.post(
 	'/auth/users/logout',
 	authMiddleware.isLogged,
 	fingerprintMiddleware.validateFingerprint,
+	authMiddleware.isRoleAuthorized('ALL'),
 	authController.logout
 );
 

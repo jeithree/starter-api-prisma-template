@@ -25,3 +25,5 @@ export type paginationMetadataResponse = {
 	hasNextPage: boolean;
 	hasPreviousPage: boolean;
 };
+
+// TODO: add the types from the frontend and enforce them in the api responses

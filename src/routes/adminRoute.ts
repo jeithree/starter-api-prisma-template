@@ -17,16 +17,16 @@ const router = Router();
 router.get(
 	'/admins/users/:userId',
 	authMiddleware.isLogged,
-	authMiddleware.isRoleAuthorized(['ADMIN', 'MANAGER']),
 	fingerprintMiddleware.validateFingerprint,
+    authMiddleware.isRoleAuthorized(['ADMIN', 'MANAGER']),
 	adminController.getUserById
 );
 
 router.get(
 	'/admins/users',
 	authMiddleware.isLogged,
-	authMiddleware.isRoleAuthorized(['ADMIN', 'MANAGER']),
 	fingerprintMiddleware.validateFingerprint,
+    authMiddleware.isRoleAuthorized(['ADMIN', 'MANAGER']),
 	validateQuery(adminGetUsersSchema),
 	adminController.getUsers
 );
@@ -34,8 +34,8 @@ router.get(
 router.post(
 	'/admins/users',
 	authMiddleware.isLogged,
-	authMiddleware.isRoleAuthorized(['ADMIN', 'MANAGER']),
 	fingerprintMiddleware.validateFingerprint,
+    authMiddleware.isRoleAuthorized(['ADMIN', 'MANAGER']),
 	validateBody(adminCreateUserSchema),
 	adminController.createUser
 );
@@ -43,8 +43,8 @@ router.post(
 router.put(
 	'/admins/users/:userId',
 	authMiddleware.isLogged,
-	authMiddleware.isRoleAuthorized(['ADMIN']),
 	fingerprintMiddleware.validateFingerprint,
+    authMiddleware.isRoleAuthorized(['ADMIN']),
 	validateBody(adminUpdateUserSchema),
 	adminController.updateUser
 );
@@ -52,16 +52,16 @@ router.put(
 router.delete(
 	'/admins/users/:userId',
 	authMiddleware.isLogged,
-	authMiddleware.isRoleAuthorized(['ADMIN']),
 	fingerprintMiddleware.validateFingerprint,
+    authMiddleware.isRoleAuthorized(['ADMIN']),
 	adminController.deleteUser
 );
 
 router.get(
 	'/admins/sessions',
 	authMiddleware.isLogged,
-	authMiddleware.isRoleAuthorized(['ADMIN', 'MANAGER']),
 	fingerprintMiddleware.validateFingerprint,
+    authMiddleware.isRoleAuthorized(['ADMIN', 'MANAGER']),
 	validateQuery(adminGetSessionsSchema),
 	adminController.getActiveSessions
 );
@@ -69,8 +69,8 @@ router.get(
 router.delete(
 	'/admins/sessions/:sessionId',
 	authMiddleware.isLogged,
-	authMiddleware.isRoleAuthorized(['ADMIN']),
 	fingerprintMiddleware.validateFingerprint,
+    authMiddleware.isRoleAuthorized(['ADMIN']),
 	adminController.deleteSession
 );
 
