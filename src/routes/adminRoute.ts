@@ -17,7 +17,7 @@ const router = Router();
 router.get(
 	'/admins/users/:userId',
 	authMiddleware.isLogged,
-	authMiddleware.isAdmin,
+	authMiddleware.isRoleAuthorized(['ADMIN', 'MANAGER']),
 	fingerprintMiddleware.validateFingerprint,
 	adminController.getUserById
 );
@@ -25,7 +25,7 @@ router.get(
 router.get(
 	'/admins/users',
 	authMiddleware.isLogged,
-	authMiddleware.isAdmin,
+	authMiddleware.isRoleAuthorized(['ADMIN', 'MANAGER']),
 	fingerprintMiddleware.validateFingerprint,
 	validateQuery(adminGetUsersSchema),
 	adminController.getUsers
@@ -34,7 +34,7 @@ router.get(
 router.post(
 	'/admins/users',
 	authMiddleware.isLogged,
-	authMiddleware.isAdmin,
+	authMiddleware.isRoleAuthorized(['ADMIN', 'MANAGER']),
 	fingerprintMiddleware.validateFingerprint,
 	validateBody(adminCreateUserSchema),
 	adminController.createUser
@@ -43,7 +43,7 @@ router.post(
 router.put(
 	'/admins/users/:userId',
 	authMiddleware.isLogged,
-	authMiddleware.isAdmin,
+	authMiddleware.isRoleAuthorized(['ADMIN']),
 	fingerprintMiddleware.validateFingerprint,
 	validateBody(adminUpdateUserSchema),
 	adminController.updateUser
@@ -52,7 +52,7 @@ router.put(
 router.delete(
 	'/admins/users/:userId',
 	authMiddleware.isLogged,
-	authMiddleware.isAdmin,
+	authMiddleware.isRoleAuthorized(['ADMIN']),
 	fingerprintMiddleware.validateFingerprint,
 	adminController.deleteUser
 );
@@ -60,7 +60,7 @@ router.delete(
 router.get(
 	'/admins/sessions',
 	authMiddleware.isLogged,
-	authMiddleware.isAdmin,
+	authMiddleware.isRoleAuthorized(['ADMIN', 'MANAGER']),
 	fingerprintMiddleware.validateFingerprint,
 	validateQuery(adminGetSessionsSchema),
 	adminController.getActiveSessions
@@ -69,7 +69,7 @@ router.get(
 router.delete(
 	'/admins/sessions/:sessionId',
 	authMiddleware.isLogged,
-	authMiddleware.isAdmin,
+	authMiddleware.isRoleAuthorized(['ADMIN']),
 	fingerprintMiddleware.validateFingerprint,
 	adminController.deleteSession
 );

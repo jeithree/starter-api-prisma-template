@@ -33,12 +33,23 @@ export const validateFingerprint = (
 			)}`,
 			'info'
 		);
+
+		req.session.destroy((err) => {
+			if (err) {
+				Logger.logToFile(`Error destroying session: ${err.message}`, 'error');
+			}
+			Logger.logToFile(
+				`Session destroyed due to fingerprint validation failure for path: ${req.path}`,
+				'info'
+			);
+		});
+
 		return next(
 			new AuthenticationError({
 				messageKey: 'auth.errors.NOT_AUTHENTICATED',
 				data: {
 					notAuthorized: true,
-					sessionInvalid: true,
+					isLogged: false,
 				},
 			})
 		);
@@ -57,12 +68,23 @@ export const validateFingerprint = (
 			)}`,
 			'info'
 		);
+
+		req.session.destroy((err) => {
+			if (err) {
+				Logger.logToFile(`Error destroying session: ${err.message}`, 'error');
+			}
+			Logger.logToFile(
+				`Session destroyed due to fingerprint validation failure for path: ${req.path}`,
+				'info'
+			);
+		});
+
 		return next(
 			new AuthenticationError({
 				messageKey: 'auth.errors.NOT_AUTHENTICATED',
 				data: {
 					notAuthorized: true,
-					sessionInvalid: true,
+					isLogged: false,
 				},
 			})
 		);

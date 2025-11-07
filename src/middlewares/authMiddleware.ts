@@ -52,18 +52,28 @@ export const isLogged = (req: Request, _res: Response, next: NextFunction) => {
 	next();
 };
 
-export const isAdmin = (req: Request, _res: Response, next: NextFunction) => {
-	if (req.session?.role !== 'ADMIN') {
-		Logger.logToFile(
-			`Forbidden attempt to access admin route ${req.path} by non-admin user`,
-			'info'
-		);
-		return next(
-			new ForbiddenError({
-				messageKey: 'auth.errors.ADMIN_ACCESS_REQUIRED',
-				data: {notAuthorized: true, isAdmin: false},
-			})
-		);
-	}
-	next();
+export const isRoleAuthorized = (
+	role: ('USER' | 'ADMIN' | 'MANAGER')[] | 'ALL'
+) => {
+	return (req: Request, _res: Response, next: NextFunction) => {
+		if (role === 'ALL') {
+			return next();
+		}
+
+		if (!role.includes(req.session?.role || 'USER')) {
+			Logger.logToFile(
+				`Forbidden attempt to access route ${req.path} by user with role ${
+					req.session?.role || 'USER'
+				}`,
+				'info'
+			);
+			return next(
+				new ForbiddenError({
+					messageKey: 'auth.errors.INSUFFICIENT_PERMISSIONS',
+					data: {notAuthorized: true, userRole: req.session?.role || 'USER'},
+				})
+			);
+		}
+		next();
+	};
 };
