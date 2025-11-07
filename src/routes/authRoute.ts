@@ -5,12 +5,12 @@ import {
 	userEmailSchema,
 	userEmailVerificationSchema,
 	userUpdatePasswordFromResetLinkSchema,
-} from '../../types/auth.ts';
-import {validateBody} from '../../middlewares/validationMiddleware.ts';
-import * as authMiddleware from '../../middlewares/authMiddleware.ts';
-import * as fingerprintMiddleware from '../../middlewares/fingerprintMiddleware.ts';
-import * as authController from '../../controllers/authController.ts';
-import * as rateLimitMiddleware from '../../middlewares/rateLimitMiddleware.ts';
+} from '../types/auth.ts';
+import {validateBody} from '../middlewares/validationMiddleware.ts';
+import * as authMiddleware from '../middlewares/authMiddleware.ts';
+import * as fingerprintMiddleware from '../middlewares/fingerprintMiddleware.ts';
+import * as authController from '../controllers/authController.ts';
+import * as rateLimitMiddleware from '../middlewares/rateLimitMiddleware.ts';
 const router = Router();
 
 router.get('/auth/users/session', authController.getSession);

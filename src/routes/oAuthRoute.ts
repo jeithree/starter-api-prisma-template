@@ -1,7 +1,7 @@
 import {Router} from 'express';
-import * as authMiddleware from '../../middlewares/authMiddleware.ts';
-import * as oAuthController from '../../controllers/oAuthController.ts';
-// import * as rateLimitMiddleware from '../../middlewares/rateLimitMiddleware.ts'; add later if needed
+import * as authMiddleware from '../middlewares/authMiddleware.ts';
+import * as oAuthController from '../controllers/oAuthController.ts';
+// import * as rateLimitMiddleware from '../middlewares/rateLimitMiddleware.ts'; add later if needed
 const router = Router();
 
 router.get(

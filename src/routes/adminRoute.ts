@@ -4,14 +4,14 @@ import {
 	adminCreateUserSchema,
 	adminUpdateUserSchema,
 	adminGetSessionsSchema,
-} from '../../types/admin.ts';
+} from '../types/admin.ts';
 import {
 	validateQuery,
 	validateBody,
-} from '../../middlewares/validationMiddleware.ts';
-import * as authMiddleware from '../../middlewares/authMiddleware.ts';
-import * as fingerprintMiddleware from '../../middlewares/fingerprintMiddleware.ts';
-import * as adminController from '../../controllers/adminController.ts';
+} from '../middlewares/validationMiddleware.ts';
+import * as authMiddleware from '../middlewares/authMiddleware.ts';
+import * as fingerprintMiddleware from '../middlewares/fingerprintMiddleware.ts';
+import * as adminController from '../controllers/adminController.ts';
 const router = Router();
 
 router.get(
