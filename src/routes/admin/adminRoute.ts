@@ -3,6 +3,7 @@ import {
 	adminGetUsersSchema,
 	adminCreateUserSchema,
 	adminUpdateUserSchema,
+	adminGetSessionsSchema,
 } from '../../types/admin.ts';
 import {
 	validateQuery,
@@ -54,6 +55,15 @@ router.delete(
 	authMiddleware.isAdmin,
 	fingerprintMiddleware.validateFingerprint,
 	adminController.deleteUser
+);
+
+router.get(
+	'/admins/sessions',
+	authMiddleware.isLogged,
+	authMiddleware.isAdmin,
+	fingerprintMiddleware.validateFingerprint,
+	validateQuery(adminGetSessionsSchema),
+	adminController.getActiveSessions
 );
 
 export default router;

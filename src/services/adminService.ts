@@ -2,6 +2,7 @@ import type {
 	AdminCreateUserDto,
 	AdminUpdateUserDto,
 	AdminGetUsersDto,
+    AdminGetSessionsDto,
 } from '../types/admin.ts';
 import prisma from '../prisma.ts';
 import * as Logger from '../helpers/logger.ts';
@@ -235,4 +236,33 @@ export const handleUserDeletion = async (userId: string) => {
 	});
 
 	await SessionService.deleteUserSessions(userId);
+};
+
+export const getActiveSessions = async (
+	currentSessionId: string,
+	query: AdminGetSessionsDto
+) => {
+	const {page, pageSize, skip} = getPagination(query);
+	const orderBy = parseSortingQuery(query.sort);
+
+	const {sessions, total} = await SessionService.getSessionsPaginated(
+		currentSessionId,
+		pageSize,
+		skip,
+		orderBy
+	);
+
+	const pagination = getPaginationMetadata(total, page, pageSize);
+
+	if (total === 0) {
+		return {
+			users: [],
+			pagination: pagination,
+		};
+	}
+
+	return {
+		sessions: sessions,
+		pagination: pagination,
+	};
 };

@@ -86,3 +86,9 @@ export const adminUpdateUserSchema = z.object({
 	isEnabled: z.boolean('validation.IS_ENABLED_FIELD_REQUIRED'),
 });
 export type AdminUpdateUserDto = z.infer<typeof adminUpdateUserSchema>;
+
+export const adminGetSessionsSchema = paginationQuerySchema.extend({
+	role: z.enum(['USER', 'ADMIN', 'MANAGER']).optional(),
+	isEnabled: z.string().optional(),
+});
+export type AdminGetSessionsDto = z.infer<typeof adminGetSessionsSchema>;
