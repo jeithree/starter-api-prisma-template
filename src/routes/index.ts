@@ -1,8 +1,8 @@
-import authRouter from './auth/authRoute.ts';
-import oAuthRoter from './oauth/oAuthRoute.ts';
+import authRouter from './authRoute.ts';
+import oAuthRoter from './oAuthRoute.ts';
 
-import userRouter from './user/userRoute.ts';
-import adminRouter from './admin/adminRoute.ts';
+import userRouter from './userRoute.ts';
+import adminRouter from './adminRoute.ts';
 
 export const v1routeDefinitions = [
 	{prefix: '/api/v1', router: authRouter},
