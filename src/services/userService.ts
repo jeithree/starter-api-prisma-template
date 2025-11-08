@@ -27,12 +27,14 @@ const assertCurrentPasswordIsValid = async (
 	if (!hashedPassword) {
 		throw new AuthenticationError({
 			messageKey: 'user.errors.INVALID_CURRENT_PASSWORD',
-			data: [
-				{
-					field: 'password',
-					message: translate('user.errors.INVALID_CURRENT_PASSWORD'),
-				},
-			],
+			data: {
+				validationErrors: [
+					{
+						field: 'password',
+						message: translate('user.errors.INVALID_CURRENT_PASSWORD'),
+					},
+				],
+			},
 		});
 	}
 
@@ -41,12 +43,14 @@ const assertCurrentPasswordIsValid = async (
 	if (!isValid) {
 		throw new AuthenticationError({
 			messageKey: 'user.errors.INVALID_CURRENT_PASSWORD',
-			data: [
-				{
-					field: 'password',
-					message: translate('user.errors.INVALID_CURRENT_PASSWORD'),
-				},
-			],
+			data: {
+				validationErrors: [
+					{
+						field: 'password',
+						message: translate('user.errors.INVALID_CURRENT_PASSWORD'),
+					},
+				],
+			},
 		});
 	}
 };

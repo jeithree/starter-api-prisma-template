@@ -35,7 +35,7 @@ export const validateBody = (schema: z.ZodSchema<any>) => {
 				return next(
 					new ValidationError({
 						messageKey: 'validation.INVALID_REQUEST',
-						data: validationErrors,
+						data: {validationErrors},
 					})
 				);
 			}
@@ -79,7 +79,7 @@ export const validateQuery = (schema: z.ZodSchema<any>) => {
 				return next(
 					new ValidationError({
 						messageKey: 'validation.INVALID_REQUEST',
-						data: validationErrors,
+						data: {validationErrors},
 					})
 				);
 			}

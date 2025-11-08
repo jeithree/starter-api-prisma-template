@@ -48,11 +48,11 @@ export const loginLimiter = rateLimit({
 		next(
 			new RateLimitError({
 				messageKey: 'rateLimit.LOGIN_RATE_LIMIT_EXCEEDED',
-				data: {
-					maxAllowedAttempts: 10,
-					timeWindowNumber: 15,
-					timeWindowUnit: 'minutes',
-				},
+				// data: {
+				// 	maxAllowedAttempts: 10,
+				// 	timeWindowNumber: 15,
+				// 	timeWindowUnit: 'minutes',
+				// },
 			})
 		);
 	},
@@ -87,11 +87,11 @@ export const passwordTokenLimiter = rateLimit({
 		next(
 			new RateLimitError({
 				messageKey: 'rateLimit.PASSWORD_RESET_REQUEST_RATE_LIMIT_EXCEEDED',
-				data: {
-					maxAllowedAttempts: 5,
-					timeWindowNumber: 10,
-					timeWindowUnit: 'minutes',
-				},
+				// data: {
+				// 	maxAllowedAttempts: 5,
+				// 	timeWindowNumber: 10,
+				// 	timeWindowUnit: 'minutes',
+				// },
 			})
 		);
 	},
@@ -108,11 +108,11 @@ export const generalLimiter = rateLimit({
 		next(
 			new RateLimitError({
 				messageKey: 'rateLimit.GENERAL_RATE_LIMIT_EXCEEDED',
-				data: {
-					maxAllowedAttempts: 100,
-					timeWindowNumber: 15,
-					timeWindowUnit: 'minutes',
-				},
+				// data: {
+				// 	maxAllowedAttempts: 100,
+				// 	timeWindowNumber: 15,
+				// 	timeWindowUnit: 'minutes',
+				// },
 			})
 		);
 	},
