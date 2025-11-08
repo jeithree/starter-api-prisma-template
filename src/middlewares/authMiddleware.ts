@@ -52,9 +52,9 @@ export const isLogged = (req: Request, _res: Response, next: NextFunction) => {
 	next();
 };
 
-export const isRoleAuthorized = (role: ('USER' | 'ADMIN' | 'MANAGER')[]) => {
+export const requireRole = (role: ('ADMIN' | 'MANAGER')[]) => {
 	return (req: Request, _res: Response, next: NextFunction) => {
-		if (!role.includes(req.session?.role || 'USER')) {
+		if (!role.includes(req.session?.role as 'ADMIN' | 'MANAGER')) {
 			Logger.logToFile(
 				`Forbidden attempt to access route ${req.path} by user with role ${
 					req.session?.role || 'USER'
