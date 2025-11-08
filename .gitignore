@@ -29,4 +29,8 @@ Dockerfile~
 docker-compose.yml~
 /src/generated/prisma
 
-/public/uploads/avatars/*
+/public/uploads/avatars/*.jpg
+/public/uploads/avatars/*.jpeg
+/public/uploads/avatars/*.png
+/public/uploads/avatars/*.gif
+/public/uploads/avatars/*.webp
