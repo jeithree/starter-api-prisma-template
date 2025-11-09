@@ -32,7 +32,6 @@ export const getOAuthProviderUrl = async (
 				messageKey: 'auth.errors.OAUTH_LOGIN_FAILED',
 				redirectUrl: req.session.urlToRedirectOnError || SITE_URL,
 				replacements: {provider: 'unknown'},
-				data: null,
 			})
 		);
 	}
@@ -63,7 +62,6 @@ export const loginWithOAuthProvider = async (
 				messageKey: 'auth.errors.OAUTH_LOGIN_FAILED',
 				redirectUrl: req.session.urlToRedirectOnError || SITE_URL,
 				replacements: {provider: 'unknown'},
-				data: null,
 			})
 		);
 	}
