@@ -3,7 +3,7 @@ import type {
 	UserCreateDto,
 	UserEmailVerificationDto,
 	UserEmailDto,
-	UserUpdatePasswordFromResetLinkDto,
+	UserResetPasswordDto,
 	UserAuthDto,
 } from '../types/auth.ts';
 import * as AuthService from '../services/authService.ts';
@@ -12,11 +12,7 @@ import {initializeAuthSession} from '../helpers/session.ts';
 import * as Logger from '../helpers/logger.ts';
 import {DEVICE_ID_COOKIE, SESSION_COOKIE} from '../configs/cookies.ts';
 
-export const createUser = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const createUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const data = req.body as UserCreateDto;
 		const user = await AuthService.handleUserCreation({
@@ -46,10 +42,7 @@ export const verifyUserEmail = async (
 ) => {
 	try {
 		const data = req.body as UserEmailVerificationDto;
-		await AuthService.handleEmailVerification(
-			data.email,
-			data.emailVerificationToken
-		);
+		await AuthService.handleEmailVerification(data.email, data.emailVerificationToken);
 
 		return res.status(200).json(
 			ApiResponse.success({
@@ -80,14 +73,14 @@ export const sendEmailVerificationToken = async (
 	}
 };
 
-export const sendRecoverPasswordLinkToken = async (
+export const sendPasswordResetLink = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
 	try {
 		const data = req.body as UserEmailDto;
-		await AuthService.handleSendRecoverPasswordLinkToken(data.email);
+		await AuthService.handleSendPasswordResetLink(data.email);
 
 		return res.status(200).json(
 			ApiResponse.success({
@@ -99,14 +92,10 @@ export const sendRecoverPasswordLinkToken = async (
 	}
 };
 
-export const updatePasswordFromResetLink = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const data = req.body as UserUpdatePasswordFromResetLinkDto;
-		await AuthService.handlePasswordUpdateFromResetLink(data);
+		const data = req.body as UserResetPasswordDto;
+		await AuthService.handleResetPassword(data);
 
 		return res.status(200).json(
 			ApiResponse.success({
@@ -118,11 +107,7 @@ export const updatePasswordFromResetLink = async (
 	}
 };
 
-export const adminLogin = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const adminLogin = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const data = req.body as UserAuthDto;
 		const roleToUse = 'ADMIN';
@@ -138,11 +123,7 @@ export const adminLogin = async (
 	}
 };
 
-export const login = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const login = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const data = req.body as UserAuthDto;
 
@@ -177,7 +158,7 @@ export const getSession = (req: Request, res: Response) => {
 			data: {
 				isLogged: req.session.isLogged,
 				role: req.session.role,
-                usernameShorthand: req.session.usernameShorthand,
+				usernameShorthand: req.session.usernameShorthand,
 				usernameToDisplay: req.session.usernameToDisplay,
 				email: req.session.email,
 				avatar: req.session.avatar,

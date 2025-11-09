@@ -1,7 +1,4 @@
-import type {
-	UserUpdatePasswordDto,
-	UserUpdateProfileDto,
-} from '../types/user.ts';
+import type {UserUpdatePasswordDto, UserUpdateProfileDto} from '../types/user.ts';
 import prisma from '../prisma.ts';
 import {AuthenticationError, NotFoundError} from '../lib/domainError.ts';
 import {hashPassword, isPasswordValid} from '../helpers/password.ts';
@@ -123,16 +120,16 @@ export const handlePasswordUpdateAfterValidatingOldOne = async (
 				accountBlockTimeNumber: 0,
 			},
 		}),
-		prisma.recoverPassword.upsert({
+		prisma.resetPassword.upsert({
 			where: {userId: user.id},
 			update: {
-				recoverPasswordToken: null,
-				recoverPasswordTokenExpiresAt: null,
+				resetPasswordToken: null,
+				resetPasswordTokenExpiresAt: null,
 			},
 			create: {
 				userId: user.id,
-				recoverPasswordToken: null,
-				recoverPasswordTokenExpiresAt: null,
+				resetPasswordToken: null,
+				resetPasswordTokenExpiresAt: null,
 			},
 		}),
 	]);

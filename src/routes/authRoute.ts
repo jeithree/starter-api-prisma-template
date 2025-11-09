@@ -4,7 +4,7 @@ import {
 	userCreateSchema,
 	userEmailSchema,
 	userEmailVerificationSchema,
-	userUpdatePasswordFromResetLinkSchema,
+	UserResetPasswordSchema,
 } from '../types/auth.ts';
 import {validateBody} from '../middlewares/validationMiddleware.ts';
 import * as authMiddleware from '../middlewares/authMiddleware.ts';
@@ -39,18 +39,18 @@ router.put(
 );
 
 router.put(
-	'/auth/users/password/recover/link-token',
+	'/auth/users/password/send/reset-link',
 	rateLimitMiddleware.passwordTokenLimiter,
 	authMiddleware.isNotLogged,
 	validateBody(userEmailSchema),
-	authController.sendRecoverPasswordLinkToken
+	authController.sendPasswordResetLink
 );
 
 router.put(
-	'/auth/users/password/from-link',
+	'/auth/users/password/reset',
 	authMiddleware.isNotLogged,
-	validateBody(userUpdatePasswordFromResetLinkSchema),
-	authController.updatePasswordFromResetLink
+	validateBody(UserResetPasswordSchema),
+	authController.resetPassword
 );
 
 router.post(

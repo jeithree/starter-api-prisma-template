@@ -31,7 +31,7 @@ export const userCreateSchema = z.object({
 		.refine((val) => /[^a-zA-Z0-9]/.test(val), 'validation.INVALID_PASSWORD')
 		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED'),
 	timezone: z.string(),
-    locale: z.string(),
+	locale: z.string(),
 });
 export type UserCreateDto = z.infer<typeof userCreateSchema>;
 
@@ -60,7 +60,7 @@ export const userEmailSchema = z.object({
 });
 export type UserEmailDto = z.infer<typeof userEmailSchema>;
 
-export const userUpdatePasswordFromResetLinkSchema = z
+export const UserResetPasswordSchema = z
 	.object({
 		email: z
 			.email('validation.INVALID_EMAIL')
@@ -113,9 +113,7 @@ export const userUpdatePasswordFromResetLinkSchema = z
 			});
 		}
 	});
-export type UserUpdatePasswordFromResetLinkDto = z.infer<
-	typeof userUpdatePasswordFromResetLinkSchema
->;
+export type UserResetPasswordDto = z.infer<typeof UserResetPasswordSchema>;
 
 export const userAuthSchema = z.object({
 	email: z

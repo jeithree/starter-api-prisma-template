@@ -1,7 +1,7 @@
 import {
 	type UserAuthDto,
 	type UserCreateDto,
-	type UserUpdatePasswordFromResetLinkDto,
+	type UserResetPasswordDto,
 } from '../types/auth.ts';
 import {type User} from '@prisma/client';
 import {v4 as uuidv4} from 'uuid';
@@ -21,7 +21,7 @@ import * as Logger from '../helpers/logger.ts';
 import {
 	SITE_NAME,
 	EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS,
-	PASSWORD_VERIFICATION_TOKEN_EXPIRATION_MINUTES,
+	PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES,
 	SITE_URL,
 	LOGIN_ATTEMPTS_FOR_10_MINUTES_BLOCK,
 	LOGIN_ATTEMPTS_FOR_24_HOURS_BLOCK,
@@ -81,9 +81,7 @@ export const assertEmailDoesNotExists = async (email: string) => {
 	}
 };
 
-const assertEmailIsNotVerified = (
-	isEmailVerified: boolean | undefined | null
-) => {
+const assertEmailIsNotVerified = (isEmailVerified: boolean | undefined | null) => {
 	if (isEmailVerified) {
 		throw new ConflictError({
 			messageKey: 'user.errors.EMAIL_ALREADY_VERIFIED',
@@ -149,8 +147,7 @@ const createUser = async ({
 					emailVerificationToken: emailVerificationToken,
 					emailVerificationTokenExpiresAt: emailVerificationToken
 						? new Date(
-								Date.now() +
-									EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
+								Date.now() + EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
 						  )
 						: null, // 24 hours from now
 				},
@@ -199,7 +196,7 @@ const getUserByEmail = async (email: string) => {
 	const emailToLowerCase = email.toLowerCase();
 	const user = await prisma.user.findUnique({
 		where: {email: emailToLowerCase},
-		include: {emailVerification: true, auth: true, recoverPassword: true},
+		include: {emailVerification: true, auth: true, resetPassword: true},
 	});
 	if (!user) {
 		throw new NotFoundError({
@@ -318,48 +315,48 @@ const setUserEmailAsVerified = async (userId: string) => {
 	}
 };
 
-const assertRecoverPasswordTokenIsExpired = (
-	recoverPasswordTokenExpirationDate: Date | null | undefined
+const assertResetPasswordTokenIsExpired = (
+	resetPasswordTokenExpirationDate: Date | null | undefined
 ) => {
 	if (
-		recoverPasswordTokenExpirationDate === null ||
-		recoverPasswordTokenExpirationDate === undefined
+		resetPasswordTokenExpirationDate === null ||
+		resetPasswordTokenExpirationDate === undefined
 	) {
 		return; // No token exists, so it is considered expired
 	}
 
 	const now = DateTime.utc();
-	const expires = DateTime.fromJSDate(recoverPasswordTokenExpirationDate, {
+	const expires = DateTime.fromJSDate(resetPasswordTokenExpirationDate, {
 		zone: 'utc',
 	});
 
 	if (now.toMillis() < expires.toMillis()) {
-		const minutesLeftToRequestNewRecoverPasswordToken = Math.ceil(
+		const minutesLeftToRequestNewPasswordResetLink = Math.ceil(
 			expires.diff(now, 'minutes').minutes
 		);
 
 		throw new ForbiddenError({
 			messageKey: 'user.errors.PASSWORD_RESET_TOKEN_NOT_EXPIRED',
 			replacements: {
-				waitTime: String(PASSWORD_VERIFICATION_TOKEN_EXPIRATION_MINUTES),
-				timeLeft: String(minutesLeftToRequestNewRecoverPasswordToken),
+				waitTime: String(PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES),
+				timeLeft: String(minutesLeftToRequestNewPasswordResetLink),
 				unit: translate(`units.minutes`),
 			},
 		});
 	}
 };
 
-const generateRecoverPasswordToken = () => {
+const generateResetPasswordToken = () => {
 	const token = uuidv4();
 	return token;
 };
 
-const sendRecoverPasswordLinkToken = ({
+const sendPasswordResetLink = ({
 	email,
-	recoverPasswordToken,
+	resetPasswordToken,
 }: {
 	email: string;
-	recoverPasswordToken: string;
+	resetPasswordToken: string;
 }) => {
 	QueueManager.addToQueue('passwordResetEmailQueue', async () => {
 		try {
@@ -369,8 +366,8 @@ const sendRecoverPasswordLinkToken = ({
 				html: `
             <html>
                 <body>
-                    Sigue el siguiente <a href="${SITE_URL}/cambiar-contrasena?email=${email}&token=${recoverPasswordToken}">Enlace</a>, para cambiar tu contraseña.</br>
-                    El enlace solo es valido por ${PASSWORD_VERIFICATION_TOKEN_EXPIRATION_MINUTES} minutos.
+                    Sigue el siguiente <a href="${SITE_URL}/cambiar-contrasena?email=${email}&token=${resetPasswordToken}">Enlace</a>, para cambiar tu contraseña.</br>
+                    El enlace solo es valido por ${PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES} minutos.
                 </body>
             </html>`,
 			});
@@ -387,28 +384,28 @@ const sendRecoverPasswordLinkToken = ({
 	});
 };
 
-const assertRecoverPasswordTokenIsValid = (
-	DBRecoverPasswordToken: string | null | undefined,
-	recoverPasswordToken: string
+const assertResetPasswordTokenIsValid = (
+	DBResetPasswordToken: string | null | undefined,
+	resetPasswordToken: string
 ) => {
-	if (DBRecoverPasswordToken != recoverPasswordToken) {
+	if (DBResetPasswordToken != resetPasswordToken) {
 		throw new AuthenticationError({
 			messageKey: 'user.errors.INVALID_PASSWORD_RESET_TOKEN',
 		});
 	}
 };
 
-const assertRecoverPasswordTokenIsNotExpired = (
-	recoverPasswordTokenExpirationDate: Date | null | undefined
+const assertResetPasswordTokenIsNotExpired = (
+	resetPasswordTokenExpirationDate: Date | null | undefined
 ) => {
-	if (!recoverPasswordTokenExpirationDate) {
+	if (!resetPasswordTokenExpirationDate) {
 		throw new AuthenticationError({
 			messageKey: 'user.errors.INVALID_PASSWORD_RESET_TOKEN',
 		});
 	}
 
 	const now = DateTime.utc();
-	const expires = DateTime.fromJSDate(recoverPasswordTokenExpirationDate, {
+	const expires = DateTime.fromJSDate(resetPasswordTokenExpirationDate, {
 		zone: 'utc',
 	});
 
@@ -542,10 +539,7 @@ const blockAccount = async (
 	});
 
 	if (!updatedUser) {
-		await Logger.logToFile(
-			`Failed to block account for userId: ${userId}`,
-			'error'
-		);
+		await Logger.logToFile(`Failed to block account for userId: ${userId}`, 'error');
 
 		throw new ServerError({
 			messageKey: 'server.errors.INTERNAL_SERVER_ERROR',
@@ -572,8 +566,7 @@ const handleEmailIsNotVerified = async (
 			update: {
 				emailVerificationToken: emailVerificationToken,
 				emailVerificationTokenExpiresAt: new Date(
-					Date.now() +
-						EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
+					Date.now() + EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
 				),
 			},
 			create: {
@@ -581,8 +574,7 @@ const handleEmailIsNotVerified = async (
 				isEmailVerified: false,
 				emailVerificationToken: emailVerificationToken,
 				emailVerificationTokenExpiresAt: new Date(
-					Date.now() +
-						EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
+					Date.now() + EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
 				),
 			},
 			include: {user: true},
@@ -701,44 +693,40 @@ export const handleSendEmailVerificationToken = async (email: string) => {
 	});
 };
 
-export const handleSendRecoverPasswordLinkToken = async (email: string) => {
+export const handleSendPasswordResetLink = async (email: string) => {
 	const user = await getUserByEmail(email);
-	assertRecoverPasswordTokenIsExpired(
-		user.recoverPassword?.recoverPasswordTokenExpiresAt
-	);
-	const recoverPasswordToken = generateRecoverPasswordToken();
-	await prisma.recoverPassword.upsert({
+	assertResetPasswordTokenIsExpired(user.resetPassword?.resetPasswordTokenExpiresAt);
+	const resetPasswordToken = generateResetPasswordToken();
+	await prisma.resetPassword.upsert({
 		where: {userId: user.id},
 		create: {
 			userId: user.id,
-			recoverPasswordToken: recoverPasswordToken,
-			recoverPasswordTokenExpiresAt: new Date(
-				Date.now() + PASSWORD_VERIFICATION_TOKEN_EXPIRATION_MINUTES * 60 * 1000
-			), // PASSWORD_VERIFICATION_TOKEN_EXPIRATION_MINUTES from now
+			resetPasswordToken: resetPasswordToken,
+			resetPasswordTokenExpiresAt: new Date(
+				Date.now() + PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES * 60 * 1000
+			), // PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES from now
 		},
 		update: {
-			recoverPasswordToken: recoverPasswordToken,
-			recoverPasswordTokenExpiresAt: new Date(
-				Date.now() + PASSWORD_VERIFICATION_TOKEN_EXPIRATION_MINUTES * 60 * 1000
-			), // PASSWORD_VERIFICATION_TOKEN_EXPIRATION_MINUTES from now
+			resetPasswordToken: resetPasswordToken,
+			resetPasswordTokenExpiresAt: new Date(
+				Date.now() + PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES * 60 * 1000
+			), // PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES from now
 		},
 	});
-	sendRecoverPasswordLinkToken({
+	sendPasswordResetLink({
 		email: user.email,
-		recoverPasswordToken,
+		resetPasswordToken,
 	});
 };
 
-export const handlePasswordUpdateFromResetLink = async (
-	data: UserUpdatePasswordFromResetLinkDto
-) => {
+export const handleResetPassword = async (data: UserResetPasswordDto) => {
 	const user = await getUserByEmail(data.email);
-	assertRecoverPasswordTokenIsValid(
-		user.recoverPassword?.recoverPasswordToken,
+	assertResetPasswordTokenIsValid(
+		user.resetPassword?.resetPasswordToken,
 		data.token
 	);
-	assertRecoverPasswordTokenIsNotExpired(
-		user.recoverPassword?.recoverPasswordTokenExpiresAt
+	assertResetPasswordTokenIsNotExpired(
+		user.resetPassword?.resetPasswordTokenExpiresAt
 	);
 
 	const hashedPassword = await hashPassword(data.newpassword);
@@ -756,20 +744,17 @@ export const handlePasswordUpdateFromResetLink = async (
 				accountBlockTimeNumber: 0,
 			},
 		}),
-		prisma.recoverPassword.update({
+		prisma.resetPassword.update({
 			where: {userId: user.id},
 			data: {
-				recoverPasswordToken: null,
-				recoverPasswordTokenExpiresAt: null,
+				resetPasswordToken: null,
+				resetPasswordTokenExpiresAt: null,
 			},
 		}),
 	]);
 };
 
-export const handleLogin = async (
-	data: UserAuthDto,
-	roleToUse?: User['role']
-) => {
+export const handleLogin = async (data: UserAuthDto, roleToUse?: User['role']) => {
 	const user = await getUserForLogin(data.email, roleToUse);
 	assertUserIsEnabled(user.isEnabled);
 	assertUserIsNotBlocked(
@@ -778,10 +763,7 @@ export const handleLogin = async (
 		user.auth?.accountBlockTimeNumber
 	);
 	await handlePasswordIsNotValid(user.id, user.auth?.password, data.password);
-	await handleEmailIsNotVerified(
-		user.id,
-		user.emailVerification?.isEmailVerified
-	);
+	await handleEmailIsNotVerified(user.id, user.emailVerification?.isEmailVerified);
 	const userUpdated = await prisma.auth.update({
 		where: {userId: user.id},
 		data: {

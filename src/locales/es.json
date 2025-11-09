@@ -115,7 +115,7 @@
 	"email": {
 		"errors": {
 			"SEND_EMAIL_VERIFICATION_TOKEN_FAILED": "No se pudo enviar el código de verificación, vuelve a intentarlo",
-			"SEND_RECOVER_PASSWORD_EMAIL_FAILED": "No se pudo enviar el enlace para cambiar la contraseña, vuelve a intentarlo"
+			"SEND_RESET_PASSWORD_EMAIL_FAILED": "No se pudo enviar el enlace para cambiar la contraseña, vuelve a intentarlo"
 		},
 		"success": {
 			"EMAIL_VERIFICATION_TOKEN_SENT": "Código de verificación enviado exitosamente",

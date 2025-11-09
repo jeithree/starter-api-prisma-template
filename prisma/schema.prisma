@@ -28,7 +28,7 @@ model User {
     auth                    Auth?
     oAuthAccounts           OAuthAccount[]
     emailVerification       EmailVerification?
-    recoverPassword         RecoverPassword?
+    resetPassword           ResetPassword?
     role                    Role          @default(USER)
 
     createdAt               DateTime      @default(now())
@@ -61,13 +61,13 @@ model EmailVerification {
     isEmailVerified                         Boolean       @default(false)
 }
 
-model RecoverPassword {
+model ResetPassword {
     id                                  String        @id @default(cuid())
     userId                              String        @unique
     user                                User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    recoverPasswordToken                String?
-    recoverPasswordTokenExpiresAt       DateTime?
+    resetPasswordToken                String?
+    resetPasswordTokenExpiresAt       DateTime?
 }
 
 model OAuthAccount {
