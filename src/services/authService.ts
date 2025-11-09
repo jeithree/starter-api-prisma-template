@@ -277,15 +277,15 @@ const assertEmailVerificationTokenIsExpired = (
 	});
 
 	if (now.toMillis() < expires.toMillis()) {
-		const minutesLeftToRequestNewEmailVerificationToken = Math.ceil(
-			expires.diff(now, 'minutes').minutes
+		const hoursLeftToRequestNewEmailVerificationToken = Math.ceil(
+			expires.diff(now, 'hours').hours
 		);
 
 		throw new ForbiddenError({
 			messageKey: 'user.errors.EMAIL_VERIFICATION_TOKEN_NOT_EXPIRED',
 			replacements: {
 				waitTime: String(EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS),
-				timeLeft: String(minutesLeftToRequestNewEmailVerificationToken),
+				timeLeft: String(hoursLeftToRequestNewEmailVerificationToken),
 				unit: translate(`units.hours`),
 			},
 		});
@@ -721,13 +721,8 @@ export const handleSendPasswordResetLink = async (email: string) => {
 
 export const handleResetPassword = async (data: UserResetPasswordDto) => {
 	const user = await getUserByEmail(data.email);
-	assertResetPasswordTokenIsValid(
-		user.resetPassword?.resetPasswordToken,
-		data.token
-	);
-	assertResetPasswordTokenIsNotExpired(
-		user.resetPassword?.resetPasswordTokenExpiresAt
-	);
+	assertResetPasswordTokenIsValid(user.resetPassword?.resetPasswordToken, data.token);
+	assertResetPasswordTokenIsNotExpired(user.resetPassword?.resetPasswordTokenExpiresAt);
 
 	const hashedPassword = await hashPassword(data.newpassword);
 	// do transaction here
