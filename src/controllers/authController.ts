@@ -11,6 +11,7 @@ import ApiResponse from '../lib/apiResponse.ts';
 import {initializeAuthSession} from '../helpers/session.ts';
 import * as Logger from '../helpers/logger.ts';
 import {DEVICE_ID_COOKIE, SESSION_COOKIE} from '../configs/cookies.ts';
+import {translate} from '../helpers/helper.ts';
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -23,7 +24,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 
 		return res.status(201).json(
 			ApiResponse.success({
-				messageKey: 'user.success.USER_CREATED',
+				message: translate('user.success.USER_CREATED'),
 				data: {
 					isEmailVerified: user.emailVerification?.isEmailVerified,
 					email: user.email,
@@ -46,7 +47,7 @@ export const verifyUserEmail = async (
 
 		return res.status(200).json(
 			ApiResponse.success({
-				messageKey: 'user.success.EMAIL_VERIFIED',
+				message: translate('user.success.EMAIL_VERIFIED'),
 			})
 		);
 	} catch (error) {
@@ -65,7 +66,7 @@ export const sendEmailVerificationToken = async (
 
 		return res.status(200).json(
 			ApiResponse.success({
-				messageKey: 'email.success.EMAIL_VERIFICATION_TOKEN_SENT',
+				message: translate('email.success.EMAIL_VERIFICATION_TOKEN_SENT'),
 			})
 		);
 	} catch (error) {
@@ -84,7 +85,7 @@ export const sendPasswordResetLink = async (
 
 		return res.status(200).json(
 			ApiResponse.success({
-				messageKey: 'email.success.PASSWORD_RESET_LINK_SENT',
+				message: translate('email.success.PASSWORD_RESET_LINK_SENT'),
 			})
 		);
 	} catch (error) {
@@ -99,7 +100,7 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
 
 		return res.status(200).json(
 			ApiResponse.success({
-				messageKey: 'user.success.PASSWORD_UPDATED_FROM_LINK',
+				message: translate('user.success.PASSWORD_UPDATED_FROM_LINK'),
 			})
 		);
 	} catch (error) {
@@ -117,7 +118,7 @@ export const adminLogin = async (req: Request, res: Response, next: NextFunction
 
 		return res
 			.status(200)
-			.json(ApiResponse.success({messageKey: 'auth.success.LOGIN_SUCCESS'}));
+			.json(ApiResponse.success({message: translate('auth.success.LOGIN_SUCCESS')}));
 	} catch (error) {
 		return next(error);
 	}
@@ -132,7 +133,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
 		return res
 			.status(200)
-			.json(ApiResponse.success({messageKey: 'auth.success.LOGIN_SUCCESS'}));
+			.json(ApiResponse.success({message: translate('auth.success.LOGIN_SUCCESS')}));
 	} catch (error) {
 		return next(error);
 	}

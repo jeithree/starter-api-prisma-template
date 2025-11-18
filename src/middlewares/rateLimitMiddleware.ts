@@ -4,24 +4,15 @@ import * as Logger from '../helpers/logger.ts';
 import {translate} from '../helpers/helper.ts';
 import {RateLimitError} from '../lib/domainError.ts';
 
-//TODO: Decide if the data will be replacements or data object in the RateLimitError
-
 export const createAccountLimiter = rateLimit({
 	windowMs: 60 * 60 * 1000,
 	max: 5,
 	handler: (req: Request, _res: Response, next: NextFunction) => {
-		Logger.logToFile(
-			`Rate limit exceeded for create account: ${req.ip}`,
-			'info'
-		);
+		Logger.logToFile(`Rate limit exceeded for create account: ${req.ip}`, 'info');
 		next(
 			new RateLimitError({
-				messageKey: 'rateLimit.CREATE_ACCOUNT_RATE_LIMIT_EXCEEDED',
-				replacements: {
-					maxAllowedAttempts: '5',
-					timeWindowNumber: '1',
-					timeWindowUnit: translate('units.hour'),
-				},
+				errorCode: 'CREATE_ACCOUNT_RATE_LIMIT_EXCEEDED',
+				message: translate('rateLimit.CREATE_ACCOUNT_RATE_LIMIT_EXCEEDED'),
 			})
 		);
 	},
@@ -34,7 +25,8 @@ export const adminLoginLimiter = rateLimit({
 		Logger.logToFile(`Rate limit exceeded for login: ${req.ip}`, 'info');
 		next(
 			new RateLimitError({
-				messageKey: 'rateLimit.ADMIN_LOGIN_RATE_LIMIT_EXCEEDED',
+				errorCode: 'ADMIN_LOGIN_RATE_LIMIT_EXCEEDED',
+				message: translate('rateLimit.ADMIN_LOGIN_RATE_LIMIT_EXCEEDED'),
 			})
 		);
 	},
@@ -47,30 +39,26 @@ export const loginLimiter = rateLimit({
 		Logger.logToFile(`Rate limit exceeded for login: ${req.ip}`, 'info');
 		next(
 			new RateLimitError({
-				messageKey: 'rateLimit.LOGIN_RATE_LIMIT_EXCEEDED',
-				// data: {
-				// 	maxAllowedAttempts: 10,
-				// 	timeWindowNumber: 15,
-				// 	timeWindowUnit: 'minutes',
-				// },
+				errorCode: 'LOGIN_RATE_LIMIT_EXCEEDED',
+				message: translate('rateLimit.LOGIN_RATE_LIMIT_EXCEEDED'),
 			})
 		);
 	},
 });
 
 export const emailTokenLimiter = rateLimit({
-	windowMs: 10 * 60 * 1000,
+	windowMs: 60 * 60 * 1000,
 	max: 5,
 	handler: (req: Request, _res: Response, next: NextFunction) => {
 		Logger.logToFile(`Rate limit exceeded for email token: ${req.ip}`, 'info');
 		next(
 			new RateLimitError({
-				messageKey: 'rateLimit.EMAIL_VERIFICATION_TOKEN_RATE_LIMIT_EXCEEDED',
-                replacements: {
+				errorCode: 'EMAIL_VERIFICATION_TOKEN_RATE_LIMIT_EXCEEDED',
+				message: translate('rateLimit.EMAIL_VERIFICATION_TOKEN_RATE_LIMIT_EXCEEDED', {
 					maxAllowedAttempts: '5',
-					timeWindowNumber: '10',
-					timeWindowUnit: translate('units.minutes'),
-				},
+					timeWindowNumber: '1',
+					timeWindowUnit: translate('units.hour'),
+				}),
 			})
 		);
 	},
@@ -80,18 +68,11 @@ export const passwordTokenLimiter = rateLimit({
 	windowMs: 10 * 60 * 1000,
 	max: 5,
 	handler: (req: Request, _res: Response, next: NextFunction) => {
-		Logger.logToFile(
-			`Rate limit exceeded for password token: ${req.ip}`,
-			'info'
-		);
+		Logger.logToFile(`Rate limit exceeded for password token: ${req.ip}`, 'info');
 		next(
 			new RateLimitError({
-				messageKey: 'rateLimit.PASSWORD_RESET_REQUEST_RATE_LIMIT_EXCEEDED',
-				// data: {
-				// 	maxAllowedAttempts: 5,
-				// 	timeWindowNumber: 10,
-				// 	timeWindowUnit: 'minutes',
-				// },
+				errorCode: 'PASSWORD_RESET_REQUEST_RATE_LIMIT_EXCEEDED',
+				message: translate('rateLimit.PASSWORD_RESET_REQUEST_RATE_LIMIT_EXCEEDED'),
 			})
 		);
 	},
@@ -101,18 +82,11 @@ export const generalLimiter = rateLimit({
 	windowMs: 15 * 60 * 1000,
 	max: 200,
 	handler: (req: Request, _res: Response, next: NextFunction) => {
-		Logger.logToFile(
-			`Rate limit exceeded for general requests: ${req.ip}`,
-			'info'
-		);
+		Logger.logToFile(`Rate limit exceeded for general requests: ${req.ip}`, 'info');
 		next(
 			new RateLimitError({
-				messageKey: 'rateLimit.GENERAL_RATE_LIMIT_EXCEEDED',
-				// data: {
-				// 	maxAllowedAttempts: 100,
-				// 	timeWindowNumber: 15,
-				// 	timeWindowUnit: 'minutes',
-				// },
+				errorCode: 'GENERAL_RATE_LIMIT_EXCEEDED',
+				message: translate('rateLimit.GENERAL_RATE_LIMIT_EXCEEDED'),
 			})
 		);
 	},

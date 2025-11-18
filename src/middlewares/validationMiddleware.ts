@@ -27,21 +27,23 @@ export const validateBody = (schema: z.ZodSchema<any>) => {
 			if (error instanceof ZodError) {
 				const validationErrors = error.issues.map((err) => ({
 					field: err.path.join('.'),
-					message: translate(
-						err.message || 'validation.UNKNOWN_VALIDATION_ERROR'
-					),
+					message: err.message || translate('validation.UNKNOWN_VALIDATION_ERROR'),
 				}));
 
 				return next(
 					new ValidationError({
-						messageKey: 'validation.INVALID_REQUEST',
+						errorCode: 'INVALID_REQUEST',
+						message: translate('validation.INVALID_REQUEST'),
 						data: {validationErrors},
 					})
 				);
 			}
 
 			return next(
-				new ValidationError({messageKey: 'validation.INVALID_REQUEST'})
+				new ValidationError({
+					errorCode: 'INVALID_REQUEST',
+					message: translate('validation.INVALID_REQUEST'),
+				})
 			);
 		}
 	};
@@ -71,21 +73,23 @@ export const validateQuery = (schema: z.ZodSchema<any>) => {
 			if (error instanceof ZodError) {
 				const validationErrors = error.issues.map((err) => ({
 					field: err.path.join('.'),
-					message: translate(
-						err.message || 'validation.UNKNOWN_VALIDATION_ERROR'
-					),
+					message: err.message || translate('validation.UNKNOWN_VALIDATION_ERROR'),
 				}));
 
 				return next(
 					new ValidationError({
-						messageKey: 'validation.INVALID_REQUEST',
+						errorCode: 'INVALID_REQUEST',
+						message: translate('validation.INVALID_REQUEST'),
 						data: {validationErrors},
 					})
 				);
 			}
 
 			return next(
-				new ValidationError({messageKey: 'validation.INVALID_REQUEST'})
+				new ValidationError({
+					errorCode: 'INVALID_REQUEST',
+					message: translate('validation.INVALID_REQUEST'),
+				})
 			);
 		}
 	};

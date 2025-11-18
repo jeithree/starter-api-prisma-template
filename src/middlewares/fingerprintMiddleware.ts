@@ -3,12 +3,9 @@ import {deviceIdSchema} from '../types/session.ts';
 import {AuthenticationError} from '../lib/domainError.ts';
 import * as Logger from '../helpers/logger.ts';
 import {DEVICE_ID_COOKIE} from '../configs/cookies.ts';
+import {translate} from '../helpers/helper.ts';
 
-export const validateFingerprint = (
-	req: Request,
-	_res: Response,
-	next: NextFunction
-) => {
+export const validateFingerprint = (req: Request, _res: Response, next: NextFunction) => {
 	const fingerprint = req.session.fingerprint;
 
 	const cookieDeviceId = req.cookies[DEVICE_ID_COOKIE.name];
@@ -46,7 +43,8 @@ export const validateFingerprint = (
 
 		return next(
 			new AuthenticationError({
-				messageKey: 'auth.errors.NOT_AUTHENTICATED',
+				errorCode: 'NOT_AUTHENTICATED',
+				message: translate('auth.errors.NOT_AUTHENTICATED'),
 				data: {
 					authErrors: {isAuthenticated: false},
 				},
@@ -80,7 +78,8 @@ export const validateFingerprint = (
 
 		return next(
 			new AuthenticationError({
-				messageKey: 'auth.errors.NOT_AUTHENTICATED',
+				errorCode: 'NOT_AUTHENTICATED',
+				message: translate('auth.errors.NOT_AUTHENTICATED'),
 				data: {
 					authErrors: {isAuthenticated: true},
 				},

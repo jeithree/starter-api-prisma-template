@@ -5,6 +5,7 @@ import prisma from '../prisma.ts';
 import {oAuthProviderSchema} from '../types/oauth.ts';
 import {AuthenticationError} from '../lib/domainError.ts';
 import {OAuthClient} from '../lib/oauth/oAuthClient.ts';
+import {translate} from '../helpers/helper.ts';
 
 const getUserByUsername = async (username: string) => {
 	const user = await prisma.user.findUnique({
@@ -63,8 +64,11 @@ const connectUserToAccount = async (
 		// If OAuth account belongs to different user (different email), throw error
 		if (existingOAuthAccount.user.email !== emailToLowerCase) {
 			throw new AuthenticationError({
-				messageKey: 'auth.errors.OAUTH_ACCOUNT_ALREADY_LINKED',
-				replacements: {provider: provider},
+				errorCode: 'OAUTH_ACCOUNT_ALREADY_LINKED',
+				message: translate('auth.errors.OAUTH_ACCOUNT_ALREADY_LINKED', {
+					provider: provider,
+				}),
+				shouldRedirect: true,
 			});
 		}
 
@@ -121,9 +125,9 @@ export const getOAuhtProviderUrl = (provider: string, res: Response) => {
 	const providerCheck = oAuthProviderSchema.safeParse(provider);
 	if (!providerCheck.success) {
 		throw new AuthenticationError({
-			messageKey: 'auth.errors.OAUTH_LOGIN_FAILED',
+			errorCode: 'OAUTH_LOGIN_FAILED',
+			message: translate('auth.errors.OAUTH_LOGIN_FAILED', {provider: 'unknown'}),
 			shouldRedirect: true,
-			replacements: {provider: 'unknown'},
 		});
 	}
 
@@ -140,17 +144,19 @@ export const handleOAuthLogin = async (
 	const providerCheck = oAuthProviderSchema.safeParse(provider);
 	if (!providerCheck.success) {
 		throw new AuthenticationError({
-			messageKey: 'auth.errors.OAUTH_LOGIN_FAILED',
+			errorCode: 'OAUTH_LOGIN_FAILED',
+			message: translate('auth.errors.OAUTH_LOGIN_FAILED', {provider: 'unknown'}),
 			shouldRedirect: true,
-			replacements: {provider: 'unknown'},
 		});
 	}
 
 	if (typeof code !== 'string' || typeof state !== 'string') {
 		throw new AuthenticationError({
-			messageKey: 'auth.errors.OAUTH_LOGIN_FAILED',
+			errorCode: 'OAUTH_LOGIN_FAILED',
+			message: translate('auth.errors.OAUTH_LOGIN_FAILED', {
+				provider: providerCheck.data,
+			}),
 			shouldRedirect: true,
-			replacements: {provider: providerCheck.data},
 		});
 	}
 
@@ -167,9 +173,11 @@ export const handleOAuthLogin = async (
 		return user;
 	} catch (error) {
 		throw new AuthenticationError({
-			messageKey: 'auth.errors.OAUTH_LOGIN_FAILED',
+			errorCode: 'OAUTH_LOGIN_FAILED',
+			message: translate('auth.errors.OAUTH_LOGIN_FAILED', {
+				provider: providerCheck.data,
+			}),
 			shouldRedirect: true,
-			replacements: {provider: providerCheck.data},
 		});
 	}
 };

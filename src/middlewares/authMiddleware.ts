@@ -3,23 +3,16 @@ import type {Request, Response, NextFunction} from 'express';
 import {SITE_URL} from '../configs/basic.ts';
 import {ForbiddenError} from '../lib/domainError.ts';
 import * as Logger from '../helpers/logger.ts';
+import {translate} from '../helpers/helper.ts';
 
-export const isSocialNotLogged = (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const isSocialNotLogged = (req: Request, res: Response, next: NextFunction) => {
 	if (req.session?.isLogged) {
 		return res.redirect(`${SITE_URL}${req.query.onSuccess}`);
 	}
 	next();
 };
 
-export const isNotLogged = (
-	req: Request,
-	_res: Response,
-	next: NextFunction
-) => {
+export const isNotLogged = (req: Request, _res: Response, next: NextFunction) => {
 	if (req.session?.isLogged) {
 		Logger.logToFile(
 			`Forbidden attempt to access ${req.path} for already logged-in user`,
@@ -28,7 +21,8 @@ export const isNotLogged = (
 
 		return next(
 			new ForbiddenError({
-				messageKey: 'auth.errors.ALREADY_LOGGED_IN',
+				errorCode: 'ALREADY_LOGGED_IN',
+				message: translate('auth.errors.ALREADY_LOGGED_IN'),
 				data: {authErrors: {isAuthenticated: true}},
 			})
 		);
@@ -44,7 +38,8 @@ export const isLogged = (req: Request, _res: Response, next: NextFunction) => {
 		);
 		return next(
 			new ForbiddenError({
-				messageKey: 'auth.errors.NOT_LOGGED_IN',
+				errorCode: 'NOT_LOGGED_IN',
+				message: translate('auth.errors.NOT_LOGGED_IN'),
 				data: {authErrors: {isAuthenticated: false}},
 			})
 		);
@@ -63,7 +58,8 @@ export const requireRole = (role: ('ADMIN' | 'MANAGER')[]) => {
 			);
 			return next(
 				new ForbiddenError({
-					messageKey: 'auth.errors.INSUFFICIENT_PERMISSIONS',
+					errorCode: 'INSUFFICIENT_PERMISSIONS',
+					message: translate('auth.errors.INSUFFICIENT_PERMISSIONS'),
 					data: {authErrors: {isAuthorized: false}},
 				})
 			);

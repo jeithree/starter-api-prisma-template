@@ -46,7 +46,8 @@ export const assertUsernameDoesNotExists = async (username: string) => {
 
 	if (usernameFound) {
 		throw new ConflictError({
-			messageKey: 'user.errors.USERNAME_ALREADY_TAKEN',
+			errorCode: 'USERNAME_ALREADY_TAKEN',
+			message: translate('user.errors.USERNAME_ALREADY_TAKEN'),
 			data: {
 				validationErrors: [
 					{
@@ -68,7 +69,8 @@ export const assertEmailDoesNotExists = async (email: string) => {
 
 	if (user) {
 		throw new ConflictError({
-			messageKey: 'user.errors.EMAIL_ALREADY_EXISTS',
+			errorCode: 'EMAIL_ALREADY_EXISTS',
+			message: translate('user.errors.EMAIL_ALREADY_EXISTS'),
 			data: {
 				validationErrors: [
 					{
@@ -84,7 +86,8 @@ export const assertEmailDoesNotExists = async (email: string) => {
 const assertEmailIsNotVerified = (isEmailVerified: boolean | undefined | null) => {
 	if (isEmailVerified) {
 		throw new ConflictError({
-			messageKey: 'user.errors.EMAIL_ALREADY_VERIFIED',
+			errorCode: 'EMAIL_ALREADY_VERIFIED',
+			message: translate('user.errors.EMAIL_ALREADY_VERIFIED'),
 			data: {
 				validationErrors: [
 					{
@@ -200,7 +203,8 @@ const getUserByEmail = async (email: string) => {
 	});
 	if (!user) {
 		throw new NotFoundError({
-			messageKey: 'user.errors.EMAIL_NOT_FOUND',
+			errorCode: 'EMAIL_NOT_FOUND',
+			message: translate('user.errors.EMAIL_NOT_FOUND'),
 			data: {
 				validationErrors: [
 					{
@@ -220,7 +224,8 @@ const assertEmailVerificationTokenIsValid = (
 ) => {
 	if (DBEmailVerificationToken !== emailVerificationToken) {
 		throw new AuthenticationError({
-			messageKey: 'user.errors.INVALID_EMAIL_VERIFICATION_TOKEN',
+			errorCode: 'INVALID_EMAIL_VERIFICATION_TOKEN',
+			message: translate('user.errors.INVALID_EMAIL_VERIFICATION_TOKEN'),
 			data: {
 				validationErrors: [
 					{
@@ -238,7 +243,8 @@ const assertEmailVerificationTokenIsNotExpired = (
 ) => {
 	if (!emailVerificationTokenExpirationDate) {
 		throw new AuthenticationError({
-			messageKey: 'user.errors.INVALID_EMAIL_VERIFICATION_TOKEN',
+			errorCode: 'INVALID_EMAIL_VERIFICATION_TOKEN',
+			message: translate('user.errors.INVALID_EMAIL_VERIFICATION_TOKEN'),
 		});
 	}
 
@@ -249,7 +255,8 @@ const assertEmailVerificationTokenIsNotExpired = (
 
 	if (now.toMillis() > expires.toMillis()) {
 		throw new AuthenticationError({
-			messageKey: 'user.errors.EMAIL_VERIFICATION_TOKEN_EXPIRED',
+			errorCode: 'EMAIL_VERIFICATION_TOKEN_EXPIRED',
+			message: translate('user.errors.EMAIL_VERIFICATION_TOKEN_EXPIRED'),
 			data: {
 				validationErrors: [
 					{
@@ -267,7 +274,8 @@ const assertEmailVerificationTokenIsExpired = (
 ) => {
 	if (!emailVerificationTokenExpirationDate) {
 		throw new AuthenticationError({
-			messageKey: 'user.errors.INVALID_EMAIL_VERIFICATION_TOKEN',
+			errorCode: 'INVALID_EMAIL_VERIFICATION_TOKEN',
+			message: translate('user.errors.INVALID_EMAIL_VERIFICATION_TOKEN'),
 		});
 	}
 
@@ -282,12 +290,12 @@ const assertEmailVerificationTokenIsExpired = (
 		);
 
 		throw new ForbiddenError({
-			messageKey: 'user.errors.EMAIL_VERIFICATION_TOKEN_NOT_EXPIRED',
-			replacements: {
+			errorCode: 'EMAIL_VERIFICATION_TOKEN_NOT_EXPIRED',
+			message: translate('user.errors.EMAIL_VERIFICATION_TOKEN_NOT_EXPIRED', {
 				waitTime: String(EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS),
 				timeLeft: String(hoursLeftToRequestNewEmailVerificationToken),
 				unit: translate(`units.hours`),
-			},
+			}),
 		});
 	}
 };
@@ -310,7 +318,8 @@ const setUserEmailAsVerified = async (userId: string) => {
 		});
 	} catch (error) {
 		throw new ServerError({
-			messageKey: 'user.errors.EMAIL_VERIFICATION_FAILED',
+			errorCode: 'EMAIL_VERIFICATION_FAILED',
+			message: translate('user.errors.EMAIL_VERIFICATION_FAILED'),
 		});
 	}
 };
@@ -336,12 +345,12 @@ const assertResetPasswordTokenIsExpired = (
 		);
 
 		throw new ForbiddenError({
-			messageKey: 'user.errors.PASSWORD_RESET_TOKEN_NOT_EXPIRED',
-			replacements: {
+			errorCode: 'PASSWORD_RESET_TOKEN_NOT_EXPIRED',
+			message: translate('user.errors.PASSWORD_RESET_TOKEN_NOT_EXPIRED', {
 				waitTime: String(PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES),
 				timeLeft: String(minutesLeftToRequestNewPasswordResetLink),
 				unit: translate(`units.minutes`),
-			},
+			}),
 		});
 	}
 };
@@ -390,7 +399,8 @@ const assertResetPasswordTokenIsValid = (
 ) => {
 	if (DBResetPasswordToken != resetPasswordToken) {
 		throw new AuthenticationError({
-			messageKey: 'user.errors.INVALID_PASSWORD_RESET_TOKEN',
+			errorCode: 'INVALID_PASSWORD_RESET_TOKEN',
+			message: translate('user.errors.INVALID_PASSWORD_RESET_TOKEN'),
 		});
 	}
 };
@@ -400,7 +410,8 @@ const assertResetPasswordTokenIsNotExpired = (
 ) => {
 	if (!resetPasswordTokenExpirationDate) {
 		throw new AuthenticationError({
-			messageKey: 'user.errors.INVALID_PASSWORD_RESET_TOKEN',
+			errorCode: 'INVALID_PASSWORD_RESET_TOKEN',
+			message: translate('user.errors.INVALID_PASSWORD_RESET_TOKEN'),
 		});
 	}
 
@@ -411,7 +422,8 @@ const assertResetPasswordTokenIsNotExpired = (
 
 	if (now.toMillis() > expires.toMillis()) {
 		throw new AuthenticationError({
-			messageKey: 'user.errors.PASSWORD_RESET_TOKEN_EXPIRED',
+			errorCode: 'PASSWORD_RESET_TOKEN_EXPIRED',
+			message: translate('user.errors.PASSWORD_RESET_TOKEN_EXPIRED'),
 		});
 	}
 };
@@ -433,7 +445,8 @@ const getUserForLogin = async (
 
 	if (!user) {
 		throw new AuthenticationError({
-			messageKey: 'auth.errors.INVALID_CREDENTIALS',
+			errorCode: 'INVALID_CREDENTIALS',
+			message: translate('auth.errors.INVALID_CREDENTIALS'),
 		});
 	}
 
@@ -459,11 +472,11 @@ const assertUserIsNotBlocked = (
 		const blockTimeUnit = blockTime === 10 ? 'minutes' : 'hours';
 
 		throw new ForbiddenError({
-			messageKey: 'user.errors.ACCOUNT_BLOCKED',
-			replacements: {
+			errorCode: 'ACCOUNT_BLOCKED',
+			message: translate('user.errors.ACCOUNT_BLOCKED', {
 				blockTime: String(blockTime),
 				blockTimeUnit: translate(`units.${blockTimeUnit}`),
-			},
+			}),
 		});
 	}
 };
@@ -475,7 +488,8 @@ const handlePasswordIsNotValid = async (
 ) => {
 	if (!hashedPassword) {
 		throw new AuthenticationError({
-			messageKey: 'auth.errors.INVALID_CREDENTIALS',
+			errorCode: 'INVALID_CREDENTIALS',
+			message: translate('auth.errors.INVALID_CREDENTIALS'),
 		});
 	}
 
@@ -483,7 +497,8 @@ const handlePasswordIsNotValid = async (
 	if (!isValid) {
 		await handleFailedLoginAttempts(userId);
 		throw new AuthenticationError({
-			messageKey: 'auth.errors.INVALID_CREDENTIALS',
+			errorCode: 'INVALID_CREDENTIALS',
+			message: translate('auth.errors.INVALID_CREDENTIALS'),
 		});
 	}
 };
@@ -505,7 +520,8 @@ const handleFailedLoginAttempts = async (userId: string) => {
 		);
 
 		throw new ServerError({
-			messageKey: 'server.errors.INTERNAL_SERVER_ERROR',
+			errorCode: 'INTERNAL_SERVER_ERROR',
+			message: translate('server.errors.INTERNAL_SERVER_ERROR'),
 		});
 	}
 
@@ -542,16 +558,17 @@ const blockAccount = async (
 		await Logger.logToFile(`Failed to block account for userId: ${userId}`, 'error');
 
 		throw new ServerError({
-			messageKey: 'server.errors.INTERNAL_SERVER_ERROR',
+			errorCode: 'INTERNAL_SERVER_ERROR',
+			message: translate('server.errors.INTERNAL_SERVER_ERROR'),
 		});
 	}
 
 	throw new ForbiddenError({
-		messageKey: 'user.errors.ACCOUNT_BLOCKED',
-		replacements: {
+		errorCode: 'ACCOUNT_BLOCKED',
+		message: translate('user.errors.ACCOUNT_BLOCKED', {
 			blockTime: String(blockTime),
 			blockTimeUnit: translate(`units.${blockTimeUnit}`),
-		},
+		}),
 	});
 };
 
@@ -586,7 +603,8 @@ const handleEmailIsNotVerified = async (
 		});
 
 		throw new ForbiddenError({
-			messageKey: 'auth.errors.EMAIL_NOT_VERIFIED',
+			errorCode: 'EMAIL_NOT_VERIFIED',
+			message: translate('auth.errors.EMAIL_NOT_VERIFIED'),
 			data: {
 				authErrors: {
 					isEmailVerified: result.isEmailVerified,
@@ -600,7 +618,8 @@ const handleEmailIsNotVerified = async (
 const assertUserIsEnabled = (isEnabled: boolean) => {
 	if (!isEnabled) {
 		throw new ForbiddenError({
-			messageKey: 'user.errors.ACCOUNT_NOT_ENABLED',
+			errorCode: 'ACCOUNT_NOT_ENABLED',
+			message: translate('user.errors.ACCOUNT_NOT_ENABLED'),
 		});
 	}
 };

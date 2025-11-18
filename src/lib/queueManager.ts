@@ -1,6 +1,7 @@
 import type {Options as PQueueOptions} from 'p-queue';
 import PQueue from 'p-queue';
 import {NotFoundError} from './domainError.ts';
+import {translate} from '../helpers/helper.ts';
 
 class QueueManager {
 	static #queues: Map<string, PQueue> = new Map();
@@ -26,11 +27,11 @@ class QueueManager {
 	 * @returns The queue instance
 	 */
 	static getQueue(name: string) {
-        const queue = this.#queues.get(name);
+		const queue = this.#queues.get(name);
 		if (!queue) {
 			throw new NotFoundError({
-				messageKey: 'internal.queue.errors.QUEUE_NOT_FOUND',
-				replacements: {name},
+				errorCode: 'QUEUE_NOT_FOUND',
+				message: translate('internal.queue.errors.QUEUE_NOT_FOUND', {name}),
 			});
 		}
 		return queue;

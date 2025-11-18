@@ -1,37 +1,14 @@
-import type {
-	ApiResponseDto,
-	ApiErrorData,
-} from '../types/shared/apiResponse.ts';
-import {translate} from '../helpers/helper.ts';
+import type {ApiResponseDto, ApiErrorData} from '../types/shared/apiResponse.ts';
 
 // TODO: revome translate from here and instead trasnlate it in the error and get the already trasnalted message here
 class ApiResponse {
 	constructor() {}
 
-	static #generateErrorCode(messageKey: string) {
-		if (
-			typeof messageKey !== 'string' ||
-			messageKey.trim() === '' ||
-			!messageKey.includes('.')
-		) {
-			return 'UNKNOWN_ERROR';
-		}
-
-		const messageParts = messageKey.split('.');
-		if (messageParts.length < 2) {
-			return 'UNKNOWN_ERROR';
-		}
-
-		const codePrefix = messageParts.pop()?.toUpperCase() || 'UNKNOWN_ERROR';
-		return codePrefix;
-	}
-
 	static success({
-		messageKey,
-		replacements = {},
-		data = null,
+		message,
+		data = undefined,
 	}: {
-		messageKey?: string;
+		message?: string;
 		replacements?: Record<string, string>;
 		data?: any;
 	}) {
@@ -39,8 +16,8 @@ class ApiResponse {
 			success: true,
 		};
 
-		if (messageKey) {
-			response.message = translate(messageKey, replacements);
+		if (message) {
+			response.message = message;
 		}
 
 		if (data) {
@@ -51,19 +28,19 @@ class ApiResponse {
 	}
 
 	static error({
-		messageKey,
-		replacements = {},
+		message,
+		errorCode,
 		data = undefined,
 	}: {
-		messageKey: string;
-		replacements?: Record<string, string>;
+		message: string;
+		errorCode: string;
 		data?: ApiErrorData;
 	}) {
 		const response: ApiResponseDto = {
 			success: false,
 			error: {
-				message: translate(messageKey, replacements),
-				code: this.#generateErrorCode(messageKey),
+				message: message,
+				code: errorCode,
 			},
 		};
 

@@ -3,6 +3,7 @@ import DomainError, {ServerError} from '../lib/domainError.ts';
 import * as OAuthService from '../services/OAuthAccountService.ts';
 import {initializeAuthSession} from '../helpers/session.ts';
 import {SITE_URL} from '../configs/basic.ts';
+import {translate} from '../helpers/helper.ts';
 
 export const getOAuthProviderUrl = async (
 	req: Request,
@@ -29,9 +30,9 @@ export const getOAuthProviderUrl = async (
 
 		return next(
 			new ServerError({
-				messageKey: 'auth.errors.OAUTH_LOGIN_FAILED',
+				errorCode: 'OAUTH_LOGIN_FAILED',
+				message: translate('auth.errors.OAUTH_LOGIN_FAILED', {provider: 'unknown'}),
 				redirectUrl: req.session.urlToRedirectOnError || SITE_URL,
-				replacements: {provider: 'unknown'},
 			})
 		);
 	}
@@ -59,9 +60,9 @@ export const loginWithOAuthProvider = async (
 
 		return next(
 			new ServerError({
-				messageKey: 'auth.errors.OAUTH_LOGIN_FAILED',
+                errorCode: 'OAUTH_LOGIN_FAILED',
+				message: translate('auth.errors.OAUTH_LOGIN_FAILED', {provider: 'unknown'}),
 				redirectUrl: req.session.urlToRedirectOnError || SITE_URL,
-				replacements: {provider: 'unknown'},
 			})
 		);
 	}

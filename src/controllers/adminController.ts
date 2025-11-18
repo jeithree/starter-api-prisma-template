@@ -7,12 +7,9 @@ import type {
 } from '../types/admin.ts';
 import * as AdminService from '../services/adminService.ts';
 import ApiResponse from '../lib/apiResponse.ts';
+import {translate} from '../helpers/helper.ts';
 
-export const getUserById = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const getUserById = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const userId = req.params.userId;
 		const data = await AdminService.getUserById(userId);
@@ -22,11 +19,7 @@ export const getUserById = async (
 	}
 };
 
-export const getUsers = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const query = req.query as AdminGetUsersDto;
 		const data = await AdminService.getUsers(query);
@@ -36,17 +29,13 @@ export const getUsers = async (
 	}
 };
 
-export const createUser = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const createUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const data = req.body as AdminCreateUserDto;
 		await AdminService.handleUserCreation(data);
 		return res.status(201).json(
 			ApiResponse.success({
-				messageKey: 'user.success.USER_CREATED_BY_ADMIN',
+				message: translate('user.success.USER_CREATED_BY_ADMIN'),
 			})
 		);
 	} catch (error) {
@@ -54,11 +43,7 @@ export const createUser = async (
 	}
 };
 
-export const updateUser = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const userId = req.params.userId;
 		const data = req.body as AdminUpdateUserDto;
@@ -66,7 +51,7 @@ export const updateUser = async (
 		await AdminService.handleUserUpdate(userId, data);
 		return res.status(200).json(
 			ApiResponse.success({
-				messageKey: 'user.success.USER_UPDATED_BY_ADMIN',
+				message: translate('user.success.USER_UPDATED_BY_ADMIN'),
 			})
 		);
 	} catch (error) {
@@ -74,18 +59,14 @@ export const updateUser = async (
 	}
 };
 
-export const deleteUser = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const userId = req.params.userId;
 		await AdminService.handleUserDeletion(userId);
 
 		return res.status(200).json(
 			ApiResponse.success({
-				messageKey: 'user.success.USER_DELETED_BY_ADMIN',
+				message: translate('user.success.USER_DELETED_BY_ADMIN'),
 			})
 		);
 	} catch (error) {
@@ -108,11 +89,7 @@ export const getActiveSessions = async (
 	}
 };
 
-export const deleteSession = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const deleteSession = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const mySessionId = req.session.id;
 		const sessionId = req.params.sessionId;
@@ -120,7 +97,7 @@ export const deleteSession = async (
 
 		return res.status(200).json(
 			ApiResponse.success({
-				messageKey: 'session.success.SESSION_DELETED_BY_ADMIN',
+				message: translate('session.success.SESSION_DELETED_BY_ADMIN'),
 			})
 		);
 	} catch (error) {

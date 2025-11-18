@@ -1,10 +1,10 @@
 import type {ApiErrorData} from '../types/shared/apiResponse.ts';
 
 type DomainErrorConfig = {
-	messageKey: string;
+	message: string;
+    errorCode: string;
 	shouldRedirect?: boolean;
 	redirectUrl?: string;
-	replacements?: Record<string, string>;
 	data?: ApiErrorData; // now all errors should follow the same data structure
 };
 
@@ -18,26 +18,26 @@ type ServerErrorConfig = DomainErrorConfig;
 
 class DomainError extends Error {
 	statusCode;
-	messageKey;
+	message;
+    errorCode;
 	shouldRedirect;
 	redirectUrl;
-	replacements;
 	data;
 
 	constructor(
 		statusCode: number,
-		messageKey: string,
+		message: string,
+        errorCode: string,
 		shouldRedirect = false,
 		redirectUrl = '',
-		replacements: Record<string, string> = {},
 		data: ApiErrorData | undefined = undefined
 	) {
-		super(messageKey);
+		super(message);
 		this.statusCode = statusCode;
-		this.messageKey = messageKey;
+		this.message = message;
+        this.errorCode = errorCode;
 		this.shouldRedirect = shouldRedirect;
 		this.redirectUrl = redirectUrl;
-		this.replacements = replacements;
 		this.data = data;
 		this.name = this.constructor.name;
 
@@ -51,13 +51,13 @@ class DomainError extends Error {
 export class NotFoundError extends DomainError {
 	constructor(config: NotFoundErrorConfig) {
 		const {
-			messageKey,
+			message,
+            errorCode,
 			shouldRedirect = false,
 			redirectUrl = '',
-			replacements = {},
 			data = undefined,
 		} = config;
-		super(404, messageKey, shouldRedirect, redirectUrl, replacements, data);
+		super(404, message, errorCode, shouldRedirect, redirectUrl, data);
 	}
 }
 
@@ -65,13 +65,13 @@ export class NotFoundError extends DomainError {
 export class AuthenticationError extends DomainError {
 	constructor(config: AuthenticationErrorConfig) {
 		const {
-			messageKey,
+			message,
+            errorCode,
 			shouldRedirect = false,
 			redirectUrl = '',
-			replacements = {},
 			data = undefined,
 		} = config;
-		super(401, messageKey, shouldRedirect, redirectUrl, replacements, data);
+		super(401, message, errorCode, shouldRedirect, redirectUrl, data);
 	}
 }
 
@@ -79,13 +79,13 @@ export class AuthenticationError extends DomainError {
 export class RateLimitError extends DomainError {
 	constructor(config: RateLimitErrorConfig) {
 		const {
-			messageKey,
+			message,
+            errorCode,
 			shouldRedirect = false,
 			redirectUrl = '',
-			replacements = {},
 			data = undefined,
 		} = config;
-		super(429, messageKey, shouldRedirect, redirectUrl, replacements, data);
+		super(429, message, errorCode, shouldRedirect, redirectUrl, data);
 	}
 }
 
@@ -93,13 +93,13 @@ export class RateLimitError extends DomainError {
 export class ConflictError extends DomainError {
 	constructor(config: ConflictErrorConfig) {
 		const {
-			messageKey,
+			message,
+            errorCode,
 			shouldRedirect = false,
 			redirectUrl = '',
-			replacements = {},
 			data = undefined,
 		} = config;
-		super(409, messageKey, shouldRedirect, redirectUrl, replacements, data);
+		super(409, message, errorCode, shouldRedirect, redirectUrl, data);
 	}
 }
 
@@ -107,13 +107,13 @@ export class ConflictError extends DomainError {
 export class ValidationError extends DomainError {
 	constructor(config: ValidationErrorConfig) {
 		const {
-			messageKey,
+			message,
+            errorCode,
 			shouldRedirect = false,
 			redirectUrl = '',
-			replacements = {},
 			data = undefined,
 		} = config;
-		super(400, messageKey, shouldRedirect, redirectUrl, replacements, data);
+		super(400, message, errorCode, shouldRedirect, redirectUrl, data);
 	}
 }
 
@@ -121,13 +121,13 @@ export class ValidationError extends DomainError {
 export class ForbiddenError extends DomainError {
 	constructor(config: ForbiddenErrorConfig) {
 		const {
-			messageKey,
+			message,
+            errorCode,
 			shouldRedirect = false,
 			redirectUrl = '',
-			replacements = {},
 			data = undefined,
 		} = config;
-		super(403, messageKey, shouldRedirect, redirectUrl, replacements, data);
+		super(403, message, errorCode, shouldRedirect, redirectUrl, data);
 	}
 }
 
@@ -135,13 +135,13 @@ export class ForbiddenError extends DomainError {
 export class ServerError extends DomainError {
 	constructor(config: ServerErrorConfig) {
 		const {
-			messageKey,
+			message,
+            errorCode,
 			shouldRedirect = false,
 			redirectUrl = '',
-			replacements = {},
 			data = undefined,
 		} = config;
-		super(500, messageKey, shouldRedirect, redirectUrl, replacements, data);
+		super(500, message, errorCode, shouldRedirect, redirectUrl, data);
 	}
 }
 

@@ -2,6 +2,7 @@ import path from 'node:path';
 import multer from 'multer';
 import {ValidationError} from '../lib/domainError.ts';
 const __dirname = import.meta.dirname;
+import {translate} from '../helpers/helper.ts';
 
 const upload = multer({
 	storage: multer.diskStorage({
@@ -25,7 +26,8 @@ const upload = multer({
 		} else {
 			cb(
 				new ValidationError({
-					messageKey: 'validation.INVALID_FILE_TYPE',
+					errorCode: 'INVALID_FILE_TYPE',
+					message: translate('validation.INVALID_FILE_TYPE'),
 				})
 			);
 		}

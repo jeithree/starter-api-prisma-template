@@ -1,13 +1,11 @@
 import type {Request, Response, NextFunction} from 'express';
 import {ZodError} from 'zod';
 import * as Logger from '../helpers/logger.ts';
-import {
-	MAX_IMAGE_UPLOAD_SIZE,
-	MAX_PAYLOAD_SIZE,
-} from '../configs/basic.ts';
+import {MAX_IMAGE_UPLOAD_SIZE, MAX_PAYLOAD_SIZE} from '../configs/basic.ts';
 import DomainError, {ServerError} from '../lib/domainError.ts';
 import ApiResponse from '../lib/apiResponse.ts';
 import {REDIRECT_ERROR_COOKIE} from '../configs/cookies.ts';
+import {translate} from '../helpers/helper.ts';
 
 export const errorHandler = async (
 	error: unknown,
@@ -20,8 +18,10 @@ export const errorHandler = async (
 	if ((error as any)?.type === 'entity.too.large') {
 		return res.status(413).json(
 			ApiResponse.error({
-				messageKey: 'server.errors.PAYLOAD_TOO_LARGE',
-				replacements: {maxAllowedSize: MAX_PAYLOAD_SIZE},
+				errorCode: 'PAYLOAD_TOO_LARGE',
+				message: translate('server.errors.PAYLOAD_TOO_LARGE', {
+					maxAllowedSize: MAX_PAYLOAD_SIZE,
+				}),
 			})
 		);
 	}
@@ -29,8 +29,10 @@ export const errorHandler = async (
 	if ((error as any)?.code === 'FILE_IMAGE_TOO_LARGE') {
 		return res.status(413).json(
 			ApiResponse.error({
-				messageKey: 'validation.FILE_IMAGE_TOO_LARGE',
-				replacements: {maxFileSize: MAX_IMAGE_UPLOAD_SIZE},
+				errorCode: 'FILE_IMAGE_TOO_LARGE',
+				message: translate('validation.FILE_IMAGE_TOO_LARGE', {
+					maxFileSize: MAX_IMAGE_UPLOAD_SIZE,
+				}),
 			})
 		);
 	}
@@ -43,7 +45,8 @@ export const errorHandler = async (
 
 		return res.status(400).json(
 			ApiResponse.error({
-				messageKey: 'validation.INVALID_REQUEST',
+				errorCode: 'INVALID_REQUEST',
+				message: translate('validation.INVALID_REQUEST'),
 			})
 		);
 	}
@@ -52,14 +55,10 @@ export const errorHandler = async (
 		const errorRespondObject = ApiResponse.error(error);
 
 		if (error.shouldRedirect) {
-			res.cookie(
-				REDIRECT_ERROR_COOKIE.name,
-				errorRespondObject.error?.message,
-				{
-					...REDIRECT_ERROR_COOKIE.options,
-					maxAge: REDIRECT_ERROR_COOKIE.maxAge,
-				}
-			);
+			res.cookie(REDIRECT_ERROR_COOKIE.name, errorRespondObject.error?.message, {
+				...REDIRECT_ERROR_COOKIE.options,
+				maxAge: REDIRECT_ERROR_COOKIE.maxAge,
+			});
 
 			return res.redirect(error.redirectUrl);
 		}
@@ -68,10 +67,9 @@ export const errorHandler = async (
 	}
 
 	const serverError = new ServerError({
-		messageKey: 'server.errors.INTERNAL_SERVER_ERROR',
+		errorCode: 'INTERNAL_SERVER_ERROR',
+		message: translate('server.errors.INTERNAL_SERVER_ERROR'),
 	});
 
-	return res
-		.status(serverError.statusCode)
-		.json(ApiResponse.error(serverError));
+	return res.status(serverError.statusCode).json(ApiResponse.error(serverError));
 };

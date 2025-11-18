@@ -2,14 +2,12 @@ import crypto from 'crypto';
 import type {Request, Response as ExpressResponse} from 'express';
 import {z} from 'zod';
 import {oAuthTokenSchema} from '../../types/oauth.ts';
-import {
-	STATE_COOKIE_KEY,
-	CODE_VERIFIER_COOKIE_KEY,
-} from '../../configs/cookies.ts';
+import {STATE_COOKIE_KEY, CODE_VERIFIER_COOKIE_KEY} from '../../configs/cookies.ts';
 import {AuthenticationError} from '../domainError.ts';
 import {createFacebookOAuthClient, facebookUserFetcher} from './facebook.ts';
 import {createGoogleOAuthClient, googleUserFetcher} from './google.ts';
-import {DEV_MODE} from '../../configs/basic.ts';
+import * as Logger from '../../helpers/logger.ts';
+import {translate} from '../../helpers/helper.ts';
 
 type OAuthUrls = {
 	auth: string;
@@ -105,11 +103,11 @@ export class OAuthClient<T> {
 	) {
 		const isValidState = this.#validateState(state, req);
 		if (!isValidState) {
+			Logger.logToFile(`Invalid state parameter for provider ${this.#provider}`, 'warn');
 			throw new AuthenticationError({
-				messageKey: 'auth.errors.OAUTH_LOGIN_FAILED',
+				errorCode: 'OAUTH_LOGIN_FAILED',
+				message: translate('auth.errors.OAUTH_LOGIN_FAILED', {provider: this.#provider}),
 				shouldRedirect: true,
-				replacements: {provider: this.#provider},
-				data: DEV_MODE ? {error: 'Invalid state'} : null,
 			});
 		}
 
@@ -124,11 +122,14 @@ export class OAuthClient<T> {
 		const dataCheck = this.#userInfo.schema.safeParse(data);
 
 		if (!dataCheck.success) {
+			Logger.logToConsoleIfDevMode(
+				`Invalid user data for provider ${this.#provider}`,
+				`${JSON.stringify(data)}`
+			);
 			throw new AuthenticationError({
-				messageKey: 'auth.errors.OAUTH_LOGIN_FAILED',
+				errorCode: 'OAUTH_LOGIN_FAILED',
+				message: translate('auth.errors.OAUTH_LOGIN_FAILED', {provider: this.#provider}),
 				shouldRedirect: true,
-				replacements: {provider: this.#provider},
-				data: DEV_MODE ? data : null,
 			});
 		}
 
@@ -157,11 +158,14 @@ export class OAuthClient<T> {
 		const dataCheck = this.#tokenSchema.safeParse(data);
 
 		if (!dataCheck.success) {
+			Logger.logToConsoleIfDevMode(
+				`Invalid data token for provider ${this.#provider}`,
+				`${JSON.stringify(data)}`
+			);
 			throw new AuthenticationError({
-				messageKey: 'auth.errors.OAUTH_LOGIN_FAILED',
+				errorCode: 'OAUTH_LOGIN_FAILED',
+				message: translate('auth.errors.OAUTH_LOGIN_FAILED', {provider: this.#provider}),
 				shouldRedirect: true,
-				replacements: {provider: this.#provider},
-				data: DEV_MODE ? data : null,
 			});
 		}
 
@@ -179,9 +183,9 @@ export class OAuthClient<T> {
 				return createGoogleOAuthClient();
 			default:
 				throw new AuthenticationError({
-					messageKey: 'auth.errors.OAUTH_LOGIN_FAILED',
+					errorCode: 'OAUTH_LOGIN_FAILED',
+					message: translate('auth.errors.OAUTH_LOGIN_FAILED', {provider: 'unknown'}),
 					shouldRedirect: true,
-					replacements: {provider: 'unknown'},
 				});
 		}
 	}
@@ -194,9 +198,9 @@ export class OAuthClient<T> {
 				return googleUserFetcher;
 			default:
 				throw new AuthenticationError({
-					messageKey: 'auth.errors.OAUTH_LOGIN_FAILED',
+					errorCode: 'OAUTH_LOGIN_FAILED',
+					message: translate('auth.errors.OAUTH_LOGIN_FAILED', {provider: 'unknown'}),
 					shouldRedirect: true,
-					replacements: {provider: 'unknown'},
 				});
 		}
 	}
@@ -209,11 +213,14 @@ export class OAuthClient<T> {
 	#getCodeVerifier(req: Request) {
 		const codeVerifier = req.cookies[CODE_VERIFIER_COOKIE_KEY.name];
 		if (!codeVerifier) {
+			Logger.logToFile(
+				`Code verifier cookie is missing for provider ${this.#provider}`,
+				'warn'
+			);
 			throw new AuthenticationError({
-				messageKey: 'auth.errors.OAUTH_LOGIN_FAILED',
+				errorCode: 'OAUTH_LOGIN_FAILED',
+				message: translate('auth.errors.OAUTH_LOGIN_FAILED', {provider: this.#provider}),
 				shouldRedirect: true,
-				replacements: {provider: this.#provider},
-				data: DEV_MODE ? {error: 'Code verifier cookie is missing'} : null,
 			});
 		}
 		return codeVerifier;

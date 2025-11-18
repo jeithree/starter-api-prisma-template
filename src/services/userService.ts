@@ -11,7 +11,8 @@ export const getUserById = async (userId: string) => {
 	});
 	if (!user) {
 		throw new NotFoundError({
-			messageKey: 'user.errors.USER_NOT_FOUND',
+			errorCode: 'USER_NOT_FOUND',
+			message: translate('user.errors.USER_NOT_FOUND'),
 		});
 	}
 	return user;
@@ -23,7 +24,8 @@ const assertCurrentPasswordIsValid = async (
 ) => {
 	if (!hashedPassword) {
 		throw new AuthenticationError({
-			messageKey: 'user.errors.INVALID_CURRENT_PASSWORD',
+			errorCode: 'INVALID_CURRENT_PASSWORD',
+			message: translate('user.errors.INVALID_CURRENT_PASSWORD'),
 			data: {
 				validationErrors: [
 					{
@@ -39,7 +41,8 @@ const assertCurrentPasswordIsValid = async (
 
 	if (!isValid) {
 		throw new AuthenticationError({
-			messageKey: 'user.errors.INVALID_CURRENT_PASSWORD',
+			errorCode: 'INVALID_CURRENT_PASSWORD',
+			message: translate('user.errors.INVALID_CURRENT_PASSWORD'),
 			data: {
 				validationErrors: [
 					{
@@ -76,7 +79,8 @@ export const handleGetUserProfile = async (userId: string) => {
 	});
 	if (!user) {
 		throw new NotFoundError({
-			messageKey: 'user.errors.USER_NOT_FOUND',
+			errorCode: 'USER_NOT_FOUND',
+			message: translate('user.errors.USER_NOT_FOUND'),
 		});
 	}
 

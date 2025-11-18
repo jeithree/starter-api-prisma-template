@@ -1,6 +1,7 @@
 import {z} from 'zod';
 import {NOT_ALLOWED_USERNAMES} from '../configs/basic.ts';
 import {paginationQuerySchema} from './pagination.ts';
+import {translate} from '../helpers/helper.ts';
 
 export const adminGetUsersSchema = paginationQuerySchema.extend({
 	role: z.enum(['USER', 'ADMIN', 'MANAGER']).optional(),
@@ -10,11 +11,11 @@ export type AdminGetUsersDto = z.infer<typeof adminGetUsersSchema>;
 
 export const adminCreateUserSchema = z.object({
 	username: z
-		.string('validation.USERNAME_FIELD_REQUIRED')
-		.min(4, 'validation.INVALID_USERNAME')
-		.max(60, 'validation.INVALID_USERNAME')
-		.refine((val) => !val.includes(' '), 'USERNAME_CONTAINS_SPACES')
-		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED')
+		.string(translate('validation.USERNAME_FIELD_REQUIRED'))
+		.min(4, translate('validation.INVALID_USERNAME'))
+		.max(60, translate('validation.INVALID_USERNAME'))
+		.refine((val) => !val.includes(' '), translate('USERNAME_CONTAINS_SPACES'))
+		.refine((val) => !val.includes('<script>'), translate('validation.NO_SCRIPT_ALLOWED'))
 		.refine(
 			(val) => {
 				const lowerCaseUsername = val.toLowerCase();
@@ -22,33 +23,39 @@ export const adminCreateUserSchema = z.object({
 					lowerCaseUsername.includes(notAllowed)
 				);
 			},
-			{message: 'user.errors.NOT_ALLOWED_USERNAME'}
+			{error: translate('user.errors.NOT_ALLOWED_USERNAME')}
 		),
 	email: z
-		.email('validation.INVALID_EMAIL')
-		.max(65, 'validation.INVALID_EMAIL_LENGTH')
+		.email(translate('validation.INVALID_EMAIL'))
+		.max(65, translate('validation.INVALID_EMAIL_LENGTH'))
 		.transform((val) => val.toLowerCase())
-		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED'),
+		.refine(
+			(val) => !val.includes('<script>'),
+			translate('validation.NO_SCRIPT_ALLOWED')
+		),
 	password: z
-		.string('validation.PASSWORD_FIELD_REQUIRED')
-		.min(8, 'validation.INVALID_PASSWORD')
-		.refine((val) => /[a-z]/.test(val), 'validation.INVALID_PASSWORD')
-		.refine((val) => /[A-Z]/.test(val), 'validation.INVALID_PASSWORD')
-		.refine((val) => /[0-9]/.test(val), 'validation.INVALID_PASSWORD')
-		.refine((val) => /[^a-zA-Z0-9]/.test(val), 'validation.INVALID_PASSWORD')
-		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED'),
-	role: z.enum(['USER', 'ADMIN', 'MANAGER'], 'validation.INVALID_ROLE'),
-	isEnabled: z.boolean('validation.IS_ENABLED_FIELD_REQUIRED'),
+		.string(translate('validation.PASSWORD_FIELD_REQUIRED'))
+		.min(8, translate('validation.INVALID_PASSWORD'))
+		.refine((val) => /[a-z]/.test(val), translate('validation.INVALID_PASSWORD'))
+		.refine((val) => /[A-Z]/.test(val), translate('validation.INVALID_PASSWORD'))
+		.refine((val) => /[0-9]/.test(val), translate('validation.INVALID_PASSWORD'))
+		.refine((val) => /[^a-zA-Z0-9]/.test(val), translate('validation.INVALID_PASSWORD'))
+		.refine(
+			(val) => !val.includes('<script>'),
+			translate('validation.NO_SCRIPT_ALLOWED')
+		),
+	role: z.enum(['USER', 'ADMIN', 'MANAGER'], translate('validation.INVALID_ROLE')),
+	isEnabled: z.boolean(translate('validation.IS_ENABLED_FIELD_REQUIRED')),
 });
 export type AdminCreateUserDto = z.infer<typeof adminCreateUserSchema>;
 
 export const adminUpdateUserSchema = z.object({
 	username: z
-		.string('validation.USERNAME_FIELD_REQUIRED')
-		.min(4, 'validation.INVALID_USERNAME')
-		.max(60, 'validation.INVALID_USERNAME')
-		.refine((val) => !val.includes(' '), 'USERNAME_CONTAINS_SPACES')
-		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED')
+		.string(translate('validation.USERNAME_FIELD_REQUIRED'))
+		.min(4, translate('validation.INVALID_USERNAME'))
+		.max(60, translate('validation.INVALID_USERNAME'))
+		.refine((val) => !val.includes(' '), translate('USERNAME_CONTAINS_SPACES'))
+		.refine((val) => !val.includes('<script>'), translate('validation.NO_SCRIPT_ALLOWED'))
 		.refine(
 			(val) => {
 				const lowerCaseUsername = val.toLowerCase();
@@ -56,34 +63,37 @@ export const adminUpdateUserSchema = z.object({
 					lowerCaseUsername.includes(notAllowed)
 				);
 			},
-			{message: 'user.errors.NOT_ALLOWED_USERNAME'}
+			{error: translate('user.errors.NOT_ALLOWED_USERNAME')}
 		),
 	email: z
-		.email('validation.INVALID_EMAIL')
-		.max(65, 'validation.INVALID_EMAIL_LENGTH')
+		.email(translate('validation.INVALID_EMAIL'))
+		.max(65, translate('validation.INVALID_EMAIL_LENGTH'))
 		.transform((val) => val.toLowerCase())
-		.refine((val) => !val.includes('<script>'), 'validation.NO_SCRIPT_ALLOWED'),
+		.refine(
+			(val) => !val.includes('<script>'),
+			translate('validation.NO_SCRIPT_ALLOWED')
+		),
 	password: z
 		.union([
 			z.literal(''), // Allow empty string
 			z
 				.string()
-				.min(8, 'validation.INVALID_PASSWORD')
-				.refine((val) => /[a-z]/.test(val), 'validation.INVALID_PASSWORD')
-				.refine((val) => /[A-Z]/.test(val), 'validation.INVALID_PASSWORD')
-				.refine((val) => /[0-9]/.test(val), 'validation.INVALID_PASSWORD')
+				.min(8, translate('validation.INVALID_PASSWORD'))
+				.refine((val) => /[a-z]/.test(val), translate('validation.INVALID_PASSWORD'))
+				.refine((val) => /[A-Z]/.test(val), translate('validation.INVALID_PASSWORD'))
+				.refine((val) => /[0-9]/.test(val), translate('validation.INVALID_PASSWORD'))
 				.refine(
 					(val) => /[^a-zA-Z0-9]/.test(val),
-					'validation.INVALID_PASSWORD'
+					translate('validation.INVALID_PASSWORD')
 				)
 				.refine(
 					(val) => !val.includes('<script>'),
-					'validation.NO_SCRIPT_ALLOWED'
+					translate('validation.NO_SCRIPT_ALLOWED')
 				),
 		])
 		.optional(),
-	role: z.enum(['USER', 'ADMIN', 'MANAGER'], 'validation.INVALID_ROLE'),
-	isEnabled: z.boolean('validation.IS_ENABLED_FIELD_REQUIRED'),
+	role: z.enum(['USER', 'ADMIN', 'MANAGER'], translate('validation.INVALID_ROLE')),
+	isEnabled: z.boolean(translate('validation.IS_ENABLED_FIELD_REQUIRED')),
 });
 export type AdminUpdateUserDto = z.infer<typeof adminUpdateUserSchema>;
 

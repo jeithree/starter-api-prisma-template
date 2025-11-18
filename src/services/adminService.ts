@@ -24,6 +24,7 @@ import * as AuthService from './authService.ts';
 import * as UserService from './userService.ts';
 import * as SessionService from './sessionService.ts';
 import {ConflictError, NotFoundError} from '../lib/domainError.ts';
+import {translate} from '../helpers/helper.ts';
 
 export const createInitialAdminAccount = async () => {
 	try {
@@ -84,7 +85,8 @@ export const getUserById = async (userId: string) => {
 
 	if (!user) {
 		throw new NotFoundError({
-			messageKey: 'user.errors.USER_NOT_FOUND',
+			errorCode: 'USER_NOT_FOUND',
+			message: translate('user.errors.USER_NOT_FOUND'),
 		});
 	}
 
@@ -184,10 +186,7 @@ export const handleUserCreation = async (data: AdminCreateUserDto) => {
 	});
 };
 
-export const handleUserUpdate = async (
-	userId: string,
-	data: AdminUpdateUserDto
-) => {
+export const handleUserUpdate = async (userId: string, data: AdminUpdateUserDto) => {
 	const user = await UserService.getUserById(userId);
 
 	if (user.username !== data.username) {
@@ -199,9 +198,7 @@ export const handleUserUpdate = async (
 	}
 
 	const usernameShorthand = createUsernameShorthand(data.username);
-	const newpassword = data.password
-		? await hashPassword(data.password)
-		: undefined;
+	const newpassword = data.password ? await hashPassword(data.password) : undefined;
 
 	await prisma.user.update({
 		where: {id: userId},
@@ -247,7 +244,8 @@ export const handleUserDeletion = async (userId: string) => {
 	const user = await UserService.getUserById(userId);
 	if (user.role === 'ADMIN') {
 		throw new ConflictError({
-			messageKey: 'user.errors.CANNOT_DELETE_ADMIN_USER',
+			errorCode: 'CANNOT_DELETE_ADMIN_USER',
+			message: translate('user.errors.CANNOT_DELETE_ADMIN_USER'),
 		});
 	}
 
@@ -276,7 +274,7 @@ export const getActiveSessions = async (
 		pageSize,
 		skip,
 		orderBy,
-        filters
+		filters
 	);
 
 	const pagination = getPaginationMetadata(total, page, pageSize);
@@ -294,13 +292,11 @@ export const getActiveSessions = async (
 	};
 };
 
-export const deleteSession = async (
-	currentSessionId: string,
-	sessionId: string
-) => {
+export const deleteSession = async (currentSessionId: string, sessionId: string) => {
 	if (currentSessionId === sessionId) {
 		throw new ConflictError({
-			messageKey: 'session.errors.CANNOT_DELETE_CURRENT_SESSION',
+			errorCode: 'CANNOT_DELETE_CURRENT_SESSION',
+			message: translate('session.errors.CANNOT_DELETE_CURRENT_SESSION'),
 		});
 	}
 	await SessionService.deleteSessionById(sessionId);

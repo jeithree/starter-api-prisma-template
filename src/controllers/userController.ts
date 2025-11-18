@@ -1,16 +1,10 @@
 import type {Request, Response, NextFunction} from 'express';
-import type {
-	UserUpdatePasswordDto,
-	UserUpdateProfileDto,
-} from '../types/user.ts';
+import type {UserUpdatePasswordDto, UserUpdateProfileDto} from '../types/user.ts';
 import * as UserService from '../services/userService.ts';
 import ApiResponse from '../lib/apiResponse.ts';
+import {translate} from '../helpers/helper.ts';
 
-export const getUserProfile = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
+export const getUserProfile = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const userId = req.session.userId as string;
 		const user = await UserService.handleGetUserProfile(userId);
@@ -33,7 +27,7 @@ export const updatePasswordAfterValidatingOldOne = async (
 
 		return res.status(200).json(
 			ApiResponse.success({
-				messageKey: 'user.success.USER_UPDATED',
+				message: translate('user.success.USER_UPDATED'),
 			})
 		);
 	} catch (error) {
@@ -51,11 +45,7 @@ export const updateUserProfile = async (
 		const data = req.body as UserUpdateProfileDto;
 		const oldAvatar = req.session.avatar;
 
-		const user = await UserService.handleUserProfileUpdate(
-			userId,
-			data,
-			oldAvatar
-		);
+		const user = await UserService.handleUserProfileUpdate(userId, data, oldAvatar);
 
 		if (data.avatar) {
 			req.session.avatar = user.avatar;
@@ -63,7 +53,7 @@ export const updateUserProfile = async (
 
 		return res.status(200).json(
 			ApiResponse.success({
-				messageKey: 'user.success.USER_PROFILE_UPDATED',
+				message: translate('user.success.USER_PROFILE_UPDATED'),
 			})
 		);
 	} catch (error) {
