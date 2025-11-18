@@ -1,6 +1,5 @@
 import type {ApiResponseDto, ApiErrorData} from '../types/shared/apiResponse.ts';
 
-// TODO: revome translate from here and instead trasnlate it in the error and get the already trasnalted message here
 class ApiResponse {
 	constructor() {}
 
