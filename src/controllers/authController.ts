@@ -140,9 +140,9 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 };
 
 export const logout = (req: Request, res: Response) => {
-	req.session.destroy((err) => {
+	req.session.destroy(async (err) => {
 		if (err) {
-			Logger.logToFile(`Error destroying session in logout: ${err}`, 'error');
+			await Logger.logToFile(`Error destroying session in logout: ${err}`, 'error');
 		}
 	});
 	res.clearCookie(SESSION_COOKIE.name, SESSION_COOKIE.options);

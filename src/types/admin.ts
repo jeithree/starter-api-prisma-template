@@ -14,7 +14,7 @@ export const adminCreateUserSchema = z.object({
 		.string(translate('validation.USERNAME_FIELD_REQUIRED'))
 		.min(4, translate('validation.INVALID_USERNAME'))
 		.max(60, translate('validation.INVALID_USERNAME'))
-		.refine((val) => !val.includes(' '), translate('USERNAME_CONTAINS_SPACES'))
+		.refine((val) => !val.includes(' '), translate('validation.USERNAME_CONTAINS_SPACES'))
 		.refine((val) => !val.includes('<script>'), translate('validation.NO_SCRIPT_ALLOWED'))
 		.refine(
 			(val) => {
