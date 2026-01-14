@@ -13,7 +13,7 @@ export const errorHandler = async (
 	res: Response,
 	_next: NextFunction
 ) => {
-	Logger.logToFile(error, 'error');
+	Logger.log(error, 'error');
 
 	if ((error as any)?.type === 'entity.too.large') {
 		return res.status(413).json(
@@ -41,7 +41,7 @@ export const errorHandler = async (
 	// This should never happen if all routes are properly validated
 	// But just in case, we handle it gracefully
 	if (error instanceof ZodError) {
-		await Logger.logToFile(`Unhandled ZodError: ${error.issues}`, 'warn');
+		await Logger.log(`Unhandled ZodError: ${error.issues}`, 'warn');
 
 		return res.status(400).json(
 			ApiResponse.error({
@@ -55,10 +55,14 @@ export const errorHandler = async (
 		const errorRespondObject = ApiResponse.error(error);
 
 		if (error.shouldRedirect) {
-			res.cookie(REDIRECT_ERROR_COOKIE.name, errorRespondObject.error?.message, {
-				...REDIRECT_ERROR_COOKIE.options,
-				maxAge: REDIRECT_ERROR_COOKIE.maxAge,
-			});
+			res.cookie(
+				REDIRECT_ERROR_COOKIE.name,
+				errorRespondObject.error?.message,
+				{
+					...REDIRECT_ERROR_COOKIE.options,
+					maxAge: REDIRECT_ERROR_COOKIE.maxAge,
+				}
+			);
 
 			return res.redirect(error.redirectUrl);
 		}
@@ -71,5 +75,7 @@ export const errorHandler = async (
 		message: translate('server.errors.INTERNAL_SERVER_ERROR'),
 	});
 
-	return res.status(serverError.statusCode).json(ApiResponse.error(serverError));
+	return res
+		.status(serverError.statusCode)
+		.json(ApiResponse.error(serverError));
 };

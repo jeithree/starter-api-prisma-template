@@ -11,7 +11,7 @@ export const validateBody = (schema: z.ZodSchema<any>) => {
 			Object.assign(req.body, body);
 			return next();
 		} catch (error) {
-			Logger.logToFile(
+			Logger.log(
 				`Body validation error: ${JSON.stringify(
 					{
 						method: req.method,
@@ -27,7 +27,8 @@ export const validateBody = (schema: z.ZodSchema<any>) => {
 			if (error instanceof ZodError) {
 				const validationErrors = error.issues.map((err) => ({
 					field: err.path.join('.'),
-					message: err.message || translate('validation.UNKNOWN_VALIDATION_ERROR'),
+					message:
+						err.message || translate('validation.UNKNOWN_VALIDATION_ERROR'),
 				}));
 
 				return next(
@@ -57,7 +58,7 @@ export const validateQuery = (schema: z.ZodSchema<any>) => {
 			Object.assign(req.query, query);
 			return next();
 		} catch (error) {
-			Logger.logToFile(
+			Logger.log(
 				`Query validation error: ${JSON.stringify(
 					{
 						method: req.method,
@@ -73,7 +74,8 @@ export const validateQuery = (schema: z.ZodSchema<any>) => {
 			if (error instanceof ZodError) {
 				const validationErrors = error.issues.map((err) => ({
 					field: err.path.join('.'),
-					message: err.message || translate('validation.UNKNOWN_VALIDATION_ERROR'),
+					message:
+						err.message || translate('validation.UNKNOWN_VALIDATION_ERROR'),
 				}));
 
 				return next(

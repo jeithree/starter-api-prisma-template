@@ -83,7 +83,9 @@ export const assertEmailDoesNotExists = async (email: string) => {
 	}
 };
 
-const assertEmailIsNotVerified = (isEmailVerified: boolean | undefined | null) => {
+const assertEmailIsNotVerified = (
+	isEmailVerified: boolean | undefined | null
+) => {
 	if (isEmailVerified) {
 		throw new ConflictError({
 			errorCode: 'EMAIL_ALREADY_VERIFIED',
@@ -150,7 +152,8 @@ const createUser = async ({
 					emailVerificationToken: emailVerificationToken,
 					emailVerificationTokenExpiresAt: emailVerificationToken
 						? new Date(
-								Date.now() + EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
+								Date.now() +
+									EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
 						  )
 						: null, // 24 hours from now
 				},
@@ -184,13 +187,13 @@ export const sendEmailVerificationToken = ({
 			});
 
 			if (result.messageId === '') {
-				Logger.logToFile(
+				Logger.log(
 					`Email verification token sending failed for email: ${email}`,
 					'info'
 				);
 			}
 		} catch (error) {
-			Logger.logToFile(error, 'error');
+			Logger.log(error, 'error');
 		}
 	});
 };
@@ -382,13 +385,13 @@ const sendPasswordResetLink = ({
 			});
 
 			if (result.messageId === '') {
-				Logger.logToFile(
+				Logger.log(
 					`Password reset link token sending failed for email: ${email}`,
 					'info'
 				);
 			}
 		} catch (error) {
-			Logger.logToFile(error, 'error');
+			Logger.log(error, 'error');
 		}
 	});
 };
@@ -514,7 +517,7 @@ const handleFailedLoginAttempts = async (userId: string) => {
 	});
 
 	if (!updatedUser) {
-		await Logger.logToFile(
+		await Logger.log(
 			`Failed to increment failed login attempts for userId: ${userId}`,
 			'error'
 		);
@@ -555,7 +558,7 @@ const blockAccount = async (
 	});
 
 	if (!updatedUser) {
-		await Logger.logToFile(`Failed to block account for userId: ${userId}`, 'error');
+		await Logger.log(`Failed to block account for userId: ${userId}`, 'error');
 
 		throw new ServerError({
 			errorCode: 'INTERNAL_SERVER_ERROR',
@@ -583,7 +586,8 @@ const handleEmailIsNotVerified = async (
 			update: {
 				emailVerificationToken: emailVerificationToken,
 				emailVerificationTokenExpiresAt: new Date(
-					Date.now() + EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
+					Date.now() +
+						EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
 				),
 			},
 			create: {
@@ -591,7 +595,8 @@ const handleEmailIsNotVerified = async (
 				isEmailVerified: false,
 				emailVerificationToken: emailVerificationToken,
 				emailVerificationTokenExpiresAt: new Date(
-					Date.now() + EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
+					Date.now() +
+						EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
 				),
 			},
 			include: {user: true},
@@ -714,7 +719,9 @@ export const handleSendEmailVerificationToken = async (email: string) => {
 
 export const handleSendPasswordResetLink = async (email: string) => {
 	const user = await getUserByEmail(email);
-	assertResetPasswordTokenIsExpired(user.resetPassword?.resetPasswordTokenExpiresAt);
+	assertResetPasswordTokenIsExpired(
+		user.resetPassword?.resetPasswordTokenExpiresAt
+	);
 	const resetPasswordToken = generateResetPasswordToken();
 	await prisma.resetPassword.upsert({
 		where: {userId: user.id},
@@ -740,8 +747,13 @@ export const handleSendPasswordResetLink = async (email: string) => {
 
 export const handleResetPassword = async (data: UserResetPasswordDto) => {
 	const user = await getUserByEmail(data.email);
-	assertResetPasswordTokenIsValid(user.resetPassword?.resetPasswordToken, data.token);
-	assertResetPasswordTokenIsNotExpired(user.resetPassword?.resetPasswordTokenExpiresAt);
+	assertResetPasswordTokenIsValid(
+		user.resetPassword?.resetPasswordToken,
+		data.token
+	);
+	assertResetPasswordTokenIsNotExpired(
+		user.resetPassword?.resetPasswordTokenExpiresAt
+	);
 
 	const hashedPassword = await hashPassword(data.newpassword);
 	// do transaction here
@@ -768,7 +780,10 @@ export const handleResetPassword = async (data: UserResetPasswordDto) => {
 	]);
 };
 
-export const handleLogin = async (data: UserAuthDto, roleToUse?: User['role']) => {
+export const handleLogin = async (
+	data: UserAuthDto,
+	roleToUse?: User['role']
+) => {
 	const user = await getUserForLogin(data.email, roleToUse);
 	assertUserIsEnabled(user.isEnabled);
 	assertUserIsNotBlocked(
@@ -777,7 +792,10 @@ export const handleLogin = async (data: UserAuthDto, roleToUse?: User['role']) =
 		user.auth?.accountBlockTimeNumber
 	);
 	await handlePasswordIsNotValid(user.id, user.auth?.password, data.password);
-	await handleEmailIsNotVerified(user.id, user.emailVerification?.isEmailVerified);
+	await handleEmailIsNotVerified(
+		user.id,
+		user.emailVerification?.isEmailVerified
+	);
 	const userUpdated = await prisma.auth.update({
 		where: {userId: user.id},
 		data: {

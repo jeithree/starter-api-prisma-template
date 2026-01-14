@@ -13,7 +13,11 @@ import * as Logger from '../helpers/logger.ts';
 import {DEVICE_ID_COOKIE, SESSION_COOKIE} from '../configs/cookies.ts';
 import {translate} from '../helpers/helper.ts';
 
-export const createUser = async (req: Request, res: Response, next: NextFunction) => {
+export const createUser = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
 		const data = req.body as UserCreateDto;
 		const user = await AuthService.handleUserCreation({
@@ -43,7 +47,10 @@ export const verifyUserEmail = async (
 ) => {
 	try {
 		const data = req.body as UserEmailVerificationDto;
-		await AuthService.handleEmailVerification(data.email, data.emailVerificationToken);
+		await AuthService.handleEmailVerification(
+			data.email,
+			data.emailVerificationToken
+		);
 
 		return res.status(200).json(
 			ApiResponse.success({
@@ -93,7 +100,11 @@ export const sendPasswordResetLink = async (
 	}
 };
 
-export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+export const resetPassword = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
 		const data = req.body as UserResetPasswordDto;
 		await AuthService.handleResetPassword(data);
@@ -108,7 +119,11 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
 	}
 };
 
-export const adminLogin = async (req: Request, res: Response, next: NextFunction) => {
+export const adminLogin = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
 		const data = req.body as UserAuthDto;
 		const roleToUse = 'ADMIN';
@@ -118,13 +133,19 @@ export const adminLogin = async (req: Request, res: Response, next: NextFunction
 
 		return res
 			.status(200)
-			.json(ApiResponse.success({message: translate('auth.success.LOGIN_SUCCESS')}));
+			.json(
+				ApiResponse.success({message: translate('auth.success.LOGIN_SUCCESS')})
+			);
 	} catch (error) {
 		return next(error);
 	}
 };
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
+export const login = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
 		const data = req.body as UserAuthDto;
 
@@ -133,7 +154,9 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
 		return res
 			.status(200)
-			.json(ApiResponse.success({message: translate('auth.success.LOGIN_SUCCESS')}));
+			.json(
+				ApiResponse.success({message: translate('auth.success.LOGIN_SUCCESS')})
+			);
 	} catch (error) {
 		return next(error);
 	}
@@ -142,7 +165,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 export const logout = (req: Request, res: Response) => {
 	req.session.destroy(async (err) => {
 		if (err) {
-			await Logger.logToFile(`Error destroying session in logout: ${err}`, 'error');
+			await Logger.log(`Error destroying session in logout: ${err}`, 'error');
 		}
 	});
 	res.clearCookie(SESSION_COOKIE.name, SESSION_COOKIE.options);

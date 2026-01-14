@@ -5,16 +5,24 @@ import {ForbiddenError} from '../lib/domainError.ts';
 import * as Logger from '../helpers/logger.ts';
 import {translate} from '../helpers/helper.ts';
 
-export const isSocialNotLogged = (req: Request, res: Response, next: NextFunction) => {
+export const isSocialNotLogged = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	if (req.session?.isLogged) {
 		return res.redirect(`${SITE_URL}${req.query.onSuccess}`);
 	}
 	next();
 };
 
-export const isNotLogged = (req: Request, _res: Response, next: NextFunction) => {
+export const isNotLogged = (
+	req: Request,
+	_res: Response,
+	next: NextFunction
+) => {
 	if (req.session?.isLogged) {
-		Logger.logToFile(
+		Logger.log(
 			`Forbidden attempt to access ${req.path} for already logged-in user`,
 			'info'
 		);
@@ -32,7 +40,7 @@ export const isNotLogged = (req: Request, _res: Response, next: NextFunction) =>
 
 export const isLogged = (req: Request, _res: Response, next: NextFunction) => {
 	if (!req.session?.isLogged) {
-		Logger.logToFile(
+		Logger.log(
 			`Forbidden attempt to access ${req.path} by non-logged-in user`,
 			'info'
 		);
@@ -50,7 +58,7 @@ export const isLogged = (req: Request, _res: Response, next: NextFunction) => {
 export const requireRole = (role: ('ADMIN' | 'MANAGER')[]) => {
 	return (req: Request, _res: Response, next: NextFunction) => {
 		if (!role.includes(req.session?.role as 'ADMIN' | 'MANAGER')) {
-			Logger.logToFile(
+			Logger.log(
 				`Forbidden attempt to access route ${req.path} by user with role ${
 					req.session?.role || 'USER'
 				}`,

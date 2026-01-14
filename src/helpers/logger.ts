@@ -1,40 +1,27 @@
-import path from 'node:path';
-import {promises as fs} from 'node:fs';
 import {DateTime} from 'luxon';
 import {DEV_MODE, TIME_ZONE} from '../configs/basic.ts';
 
-const __dirname = import.meta.dirname;
-
 type LogType = 'error' | 'warn' | 'info' | 'debug';
 
-export const logToFile = async (error: unknown, type: LogType) => {
-	const relativeFilePath = `../logs/${type}.txt`;
-	const logFilePath = path.join(__dirname, relativeFilePath);
+export const log = async (
+	log: unknown,
+	type: LogType,
+	onlyIfDevMode: boolean = false
+) => {
+	if (onlyIfDevMode && !DEV_MODE) return;
+
 	const timestamp = DateTime.now()
 		.setZone(TIME_ZONE)
 		.toFormat('yyyy-MM-dd HH:mm:ss');
 
-	const errorContent = error instanceof Error ? error.stack : String(error);
+	const logContent = log instanceof Error ? log.stack : String(log);
+	const logMessage = `[${timestamp}] [${type.toUpperCase()}] ${logContent}`;
 
-	const logMessage = `[${timestamp}] ${errorContent}\n`;
-	await fs.appendFile(logFilePath, logMessage);
-	if (DEV_MODE) {
+	if (type === 'error') {
 		console.error(logMessage);
 	}
-};
 
-export const logToConsole = (message: string) => {
-	const timestamp = DateTime.now()
-		.setZone(TIME_ZONE)
-		.toFormat('yyyy-MM-dd HH:mm:ss');
-	const logMessage = `[${timestamp}] ${message}`;
-	console.log(logMessage);
-};
-
-export const logToConsoleIfDevMode = (message: string, log: any) => {
-	if (!DEV_MODE) return;
-	const timestamp = DateTime.now()
-		.setZone(TIME_ZONE)
-		.toFormat('yyyy-MM-dd HH:mm:ss');
-	console.log(`[${timestamp}] ${message}`, log);
+	if (type === 'warn' || type === 'info' || type === 'debug') {
+		console.log(logMessage);
+	}
 };

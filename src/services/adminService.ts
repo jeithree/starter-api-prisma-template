@@ -63,10 +63,10 @@ export const createInitialAdminAccount = async () => {
 			},
 		});
 
-		Logger.logToConsole('Initial admin account successfully created');
+		Logger.log('Initial admin account successfully created', 'info');
 	} catch (error) {
-		Logger.logToConsole('Initial admin account creation failed');
-		Logger.logToFile(error, 'error');
+		Logger.log('Initial admin account creation failed', 'error');
+		Logger.log(error, 'error');
 	}
 };
 
@@ -186,7 +186,10 @@ export const handleUserCreation = async (data: AdminCreateUserDto) => {
 	});
 };
 
-export const handleUserUpdate = async (userId: string, data: AdminUpdateUserDto) => {
+export const handleUserUpdate = async (
+	userId: string,
+	data: AdminUpdateUserDto
+) => {
 	const user = await UserService.getUserById(userId);
 
 	if (user.username !== data.username) {
@@ -198,7 +201,9 @@ export const handleUserUpdate = async (userId: string, data: AdminUpdateUserDto)
 	}
 
 	const usernameShorthand = createUsernameShorthand(data.username);
-	const newpassword = data.password ? await hashPassword(data.password) : undefined;
+	const newpassword = data.password
+		? await hashPassword(data.password)
+		: undefined;
 
 	await prisma.user.update({
 		where: {id: userId},
@@ -292,7 +297,10 @@ export const getActiveSessions = async (
 	};
 };
 
-export const deleteSession = async (currentSessionId: string, sessionId: string) => {
+export const deleteSession = async (
+	currentSessionId: string,
+	sessionId: string
+) => {
 	if (currentSessionId === sessionId) {
 		throw new ConflictError({
 			errorCode: 'CANNOT_DELETE_CURRENT_SESSION',
