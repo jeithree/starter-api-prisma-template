@@ -1,11 +1,11 @@
-export const DEV_MODE = process.env.NODE_ENV === 'development';
+export const IS_DEV_MODE = process.env.NODE_ENV === 'development';
 export const PORT = parseInt(process.env.PORT as string) || 3000;
 export const MAX_PAYLOAD_SIZE = process.env.MAX_PAYLOAD_SIZE || '25kb';
 export const MAX_IMAGE_UPLOAD_SIZE = '2mb';
 export const TIME_ZONE = process.env.TIME_ZONE || 'America/Lima';
 export const LOCALE = process.env.LOCALE || 'en-US';
 
-if (DEV_MODE) {
+if (IS_DEV_MODE) {
 	// to avoid problems with selfsigned certificates during development
 	process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 }
@@ -29,7 +29,7 @@ if (!process.env.REDIS_HOST) {
 if (!process.env.REDIS_PORT) {
 	throw new Error('No REDIS_PORT env variable set');
 }
-if (!DEV_MODE && !process.env.REDIS_PASSWORD) {
+if (!IS_DEV_MODE && !process.env.REDIS_PASSWORD) {
 	throw new Error('No REDIS_PASSWORD env variable set');
 }
 export const REDIS_HOST = process.env.REDIS_HOST;

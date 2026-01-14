@@ -4,12 +4,12 @@ import path from 'node:path';
 import app from './app.ts';
 
 // Config
-import {DEV_MODE} from './configs/basic.ts';
+import {IS_DEV_MODE} from './configs/basic.ts';
 
 // Initializations
 const __dirname = import.meta.dirname;
 
-if (DEV_MODE) {
+if (IS_DEV_MODE) {
 	// This is just to use https for development
 	const options = {
 		key: fs.readFileSync(path.join(__dirname, './certificates/key.pem')),

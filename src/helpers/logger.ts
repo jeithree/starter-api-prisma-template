@@ -1,5 +1,5 @@
 import {DateTime} from 'luxon';
-import {DEV_MODE, TIME_ZONE} from '../configs/basic.ts';
+import {IS_DEV_MODE, TIME_ZONE} from '../configs/basic.ts';
 
 type LogType = 'error' | 'warn' | 'info' | 'debug';
 
@@ -8,7 +8,7 @@ export const log = async (
 	type: LogType,
 	onlyIfDevMode: boolean = false
 ) => {
-	if (onlyIfDevMode && !DEV_MODE) return;
+	if (onlyIfDevMode && !IS_DEV_MODE) return;
 
 	const timestamp = DateTime.now()
 		.setZone(TIME_ZONE)

@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import {SITE_NAME, SMTP_CONFIG, DEV_MODE} from '../configs/basic.ts';
+import {SITE_NAME, SMTP_CONFIG, IS_DEV_MODE} from '../configs/basic.ts';
 
 /**
  * Mail Manager
@@ -17,7 +17,7 @@ class MailManager {
 				pass: SMTP_CONFIG.pass,
 			},
 			tls: {
-				rejectUnauthorized: !DEV_MODE,
+				rejectUnauthorized: !IS_DEV_MODE,
 				minVersion: 'TLSv1.2',
 			},
 		});
